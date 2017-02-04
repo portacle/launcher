@@ -28,7 +28,7 @@ char *pathcat(char *path, char *root, int c, ...){
 }
 
 int add_env(char *name, char *value){
-  char ovalue[VARLEN], nvalue[VARLEN];
+  char ovalue[VARLEN]={0}, nvalue[VARLEN]={0};
   if(!get_env(name, ovalue)) return 0;
   strcat(nvalue, value);
   strcat(nvalue, VARSEP);
@@ -64,7 +64,7 @@ int emacs_version(char *root, char *version){
 }
 
 int launch_emacs(char *root, int argc, char **argv){
-  char path[PATHLEN], data[PATHLEN], share[PATHLEN], version[PATHLEN];
+  char path[PATHLEN]={0}, data[PATHLEN]={0}, share[PATHLEN]={0}, version[PATHLEN]={0};
   if(!emacs_version(root, version)) return 0;
   pathcat(share, root, 4, PLATFORM, "emacs", "share", "emacs", version);
   
@@ -95,12 +95,12 @@ int launch_emacs(char *root, int argc, char **argv){
 }
 
 int launch_git(char *root, int argc, char **argv){
-  char path[PATHLEN];
+  char path[PATHLEN]={0};
   return launch(pathcat(path, root, 4, PLATFORM, "git", "bin", "git"), argc, argv);
 }
 
 int launch_sbcl(char *root, int argc, char **argv){
-  char path[PATHLEN];
+  char path[PATHLEN]={0};
   if(!set_env("SBCL_HOME", pathcat(path, root, 5, PLATFORM, "sbcl", "lib", "sbcl", ""))) return 0;
 
   char *rargv[argc+3];
@@ -110,7 +110,7 @@ int launch_sbcl(char *root, int argc, char **argv){
 }
 
 int configure_env(char *root){
-  char xdg[PATHLEN], bin[PATHLEN], lib[PATHLEN];
+  char xdg[PATHLEN]={0}, bin[PATHLEN]={0}, lib[PATHLEN]={0};
   pathcat(xdg, root, 2, "config", "");
   pathcat(bin, root, 3, PLATFORM, "bin", "");
   pathcat(lib, root, 3, PLATFORM, "lib", "");
@@ -124,11 +124,11 @@ int configure_env(char *root){
 }
 
 int is_root(char *root){
+  char anchor[PATHLEN]={0};
   if(strcmp(root, "") == 0
      || strcmp(root, "/") == 0
      || strcmp(root, ".") == 0)
     return -1;
-  char anchor[PATHLEN];
   if(access(pathcat(anchor, root, 1, ".portacle_root"), F_OK) < 0)
     return 0;
   return 1;
@@ -144,8 +144,8 @@ int find_root(char *root){
 }
 
 int main(int argc, char **argv){
-  char root[PATHLEN];
-  char app[PATHLEN];
+  char root[PATHLEN]={0};
+  char app[PATHLEN]={0};
   
   if(!find_root(root)){
     fprintf(stderr, "Fatal: could not determine the Portacle root directory.\n");
@@ -173,7 +173,7 @@ int main(int argc, char **argv){
   char launch[VARLEN];
   if(!get_env("PORTACLE", launch)) return 1;
   if(strcmp(launch, "info") == 0){
-    char path[VARLEN], lib[VARLEN];
+    char path[VARLEN]={0}, lib[VARLEN]={0};
     get_env("PATH", path);
     get_env(LIBRARY_VAR, lib);
     printf("  Portacle Launcher System Info:\n");
