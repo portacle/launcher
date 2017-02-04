@@ -28,11 +28,12 @@ char *pathcat(char *path, char *root, int c, ...){
 }
 
 int add_env(char *name, char *value){
-  char var[VARLEN];
-  if(!get_env(name, var)) return 0;
-  strcat(var, VARSEP);
-  strcat(var, value);
-  if(!set_env(name, var)) return 0;
+  char ovalue[VARLEN], nvalue[VARLEN];
+  if(!get_env(name, ovalue)) return 0;
+  strcat(nvalue, value);
+  strcat(nvalue, VARSEP);
+  strcat(nvalue, ovalue);
+  if(!set_env(name, nvalue)) return 0;
   return 1;
 }
 
