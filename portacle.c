@@ -184,7 +184,7 @@ int main(int argc, char **argv){
   }
 
   char launch[VARLEN];
-  if(!get_env("PORTACLE", launch)) return 1;
+  get_env("PORTACLE", launch);
   if(strcmp(launch, "info") == 0){
     char path[VARLEN]={0}, lib[VARLEN]={0};
     get_env("PATH", path);
