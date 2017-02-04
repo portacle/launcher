@@ -94,16 +94,17 @@ int launch_emacs(char *root, int argc, char **argv){
 
 int launch_git(char *root, int argc, char **argv){
   char path[PATHLEN];
-  pathcat(path, root, 4, "git", PLATFORM, "bin", "git");
-  return launch(path, argc, argv);
+  return launch(pathcat(path, root, 4, "git", PLATFORM, "bin", "git"), argc, argv);
 }
 
 int launch_sbcl(char *root, int argc, char **argv){
-  char path[PATHLEN], home[PATHLEN];
-  pathcat(home, root, 5, "sbcl", PLATFORM, "lib", "sbcl", "");
-  pathcat(path, root, 4, "sbcl", PLATFORM, "bin", "sbcl");
-  if(!set_env("SBCL_HOME", home)) return 0;
-  return launch(path, argc, argv);
+  char path[PATHLEN];
+  if(!set_env("SBCL_HOME", pathcat(path, root, 5, "sbcl", PLATFORM, "lib", "sbcl", ""))) return 0;
+
+  char *rargv[argc+3];
+  add_args(rargv, argc, argv, 3, "--no-sysinit",
+           "--userinit", pathcat(path, root, 2, "config", "sbcl-init.lisp"));
+  return launch(pathcat(path, root, 4, "sbcl", PLATFORM, "bin", "sbcl"), argc+3, rargv);
 }
 
 int configure_env(char *root){
