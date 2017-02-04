@@ -61,6 +61,7 @@ int launch(char *path, int argc, char **argv){
   for(int i=0; i<argc; ++i){
     rargv[i] = argv[i];
   }
+  rargv[argc] = 0;
   if(execve(path, rargv, environ) < 0)
     return 0;
   return 1;
