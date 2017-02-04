@@ -35,6 +35,21 @@ int add_env(char *name, char *value){
   return 1;
 }
 
+int add_args(char **rargv, int argc, char **argv, int c, ...){
+  va_list argp;
+  va_start(argp, c);
+  for(int i=0; i<c; ++i){
+    char *part = va_arg(argp, char *);
+    rargv[i] = part;
+  }
+  va_end(argp);
+
+  for(int i=0; i<argc; i++){
+    rargv[i+c] = argv[i];
+  }
+  return 1;
+}
+
 int emacs_version(char *root, char *version){
   char path[PATHLEN];
   pathcat(path, root, 4, "emacs", PLATFORM, "libexec", "emacs", "");
@@ -68,7 +83,13 @@ int launch_emacs(char *root, int argc, char **argv){
   if(!set_env("GTK_MODULES", "")) return 0;
   if(!set_env("GTK2_MODULES", "")) return 0;
   if(!set_env("GTK3_MODULES", "")) return 0;
-  return launch(pathcat(path, root, 4, "emacs", PLATFORM, "bin", "emacs"), argc, argv);
+
+  char *rargv[argc+7];
+  add_args(rargv, argc, argv, 7, "-q",
+           "--name", "Portacle",
+           "-T", "portacle",
+           "-l", pathcat(path, root, 2, "config", "emacs-init.el"));
+  return launch(pathcat(path, root, 4, "emacs", PLATFORM, "bin", "emacs"), argc+7, rargv);
 }
 
 int launch_git(char *root, int argc, char **argv){
