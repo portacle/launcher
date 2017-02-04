@@ -11,7 +11,13 @@
 #define VARLEN 32767
 #define VARSEP ";"
 
-int find_root(char *path){
+int path_up(char *path){
+  PathRemoveBackslash(path);
+  PathRemoveFileSpec(path);
+  return 1;
+}
+
+int exe_dir(char *path){
   if(!GetModuleFileName(NULL, path, PATHLEN))
     return 0;
 

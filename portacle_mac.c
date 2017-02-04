@@ -13,13 +13,18 @@
 #define VARLEN 32767     // Not actually accurate, but w/e
 #define VARSEP ":"
 
-int find_root(char *path){
-  int size = PATH_MAX;
-  _NSGetExecutablePath(path, &size);
+int path_up(char *path){
   char *rpath = dirname(path);
   if(rpath == 0)
     return 0;
   strcpy(path, rpath);
+  return 1;
+}
+
+int exe_dir(char *path){
+  int size = PATH_MAX;
+  _NSGetExecutablePath(path, &size);
+  if(!path_up(path)) return 0;
   return 1;
 }
 
