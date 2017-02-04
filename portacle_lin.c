@@ -56,12 +56,12 @@ int execpath(char *root, char *nameish, char *target){
 }
 
 int launch(char *path, int argc, char **argv){
-  char *env[1] = {0};
+  extern char **environ;
   char *rargv[argc+1];
   for(int i=0; i<argc; ++i){
     rargv[i] = argv[i];
   }
-  if(execve(path, rargv, env) < 0)
+  if(execve(path, rargv, environ) < 0)
     return 0;
   return 1;
 }
