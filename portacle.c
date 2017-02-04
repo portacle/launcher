@@ -37,19 +37,26 @@ int add_env(char *name, char *value){
   return 1;
 }
 
-int add_args(char **rargv, int argc, char **argv, int c, ...){
+int add_args(char **rargv, int argc, char **argv, int c, ...){  
   va_list argp;
   va_start(argp, c);
+  rargv[0] = argv[0];
   for(int i=0; i<c; ++i){
     char *part = va_arg(argp, char *);
-    rargv[i] = part;
+    rargv[i+1] = part;
   }
   va_end(argp);
 
-  for(int i=0; i<argc; i++){
+  for(int i=1; i<argc; i++){
     rargv[i+c] = argv[i];
   }
   return 1;
+}
+
+int is_dir_entry(struct dirent *entry){
+  return entry->d_type == DT_DIR &&
+    strcmp(entry->d_name, "..") != 0 &&
+    strcmp(entry->d_name, ".") != 0;
 }
 
 int emacs_version(char *root, char *version){
@@ -57,17 +64,21 @@ int emacs_version(char *root, char *version){
   pathcat(path, root, 4, PLATFORM, "emacs", "libexec", "emacs", "");
   DIR *dir = opendir(path);
   if(!dir) return 0;
-  struct dirent *entry = readdir(dir);
-  strcpy(version, entry->d_name);
+  struct dirent *entry;
+  while((entry = readdir(dir)) != 0){
+    if(is_dir_entry(entry)){
+      strcpy(version, entry->d_name);
+      break;
+    }
+  }  
   closedir(dir);
   return 1;
 }
 
 int launch_emacs(char *root, int argc, char **argv){
-  char path[PATHLEN]={0}, data[PATHLEN]={0}, share[PATHLEN]={0}, version[PATHLEN]={0};
+  char path[PATHLEN]={0}, start[PATHLEN]={0}, share[PATHLEN]={0}, version[PATHLEN]={0};
   if(!emacs_version(root, version)) return 0;
-  pathcat(share, root, 4, PLATFORM, "emacs", "share", "emacs", version);
-  
+  pathcat(share, root, 5, PLATFORM, "emacs", "share", "emacs", version);
   if(!set_env("EMACSLOADPATH", "")) return 0;
   if(!add_env("EMACSLOADPATH", pathcat(path, share, 2, "site-lisp", ""))) return 0;
   if(!add_env("EMACSLOADPATH", pathcat(path, share, 2, "lisp", ""))) return 0;
@@ -75,8 +86,9 @@ int launch_emacs(char *root, int argc, char **argv){
   if(!dir) return 0;
   struct dirent *entry;
   while((entry = readdir(dir)) != 0){
-    if(entry->d_type == DT_DIR)
+    if(is_dir_entry(entry)){
       if(!add_env("EMACSLOADPATH", pathcat(path, share, 3, "lisp", entry->d_name, ""))) return 0;
+    }
   }
   closedir(dir);
   
@@ -87,11 +99,12 @@ int launch_emacs(char *root, int argc, char **argv){
   if(!set_env("GTK2_MODULES", "")) return 0;
   if(!set_env("GTK3_MODULES", "")) return 0;
 
+  pathcat(start, root, 2, "config", "emacs-init.el");
   char *rargv[argc+7];
-  add_args(rargv, argc, argv, 7, "-q",
+  add_args(rargv, argc, argv, 7, "--no-init-file",
            "--name", "Portacle",
-           "-T", "portacle",
-           "-l", pathcat(path, root, 2, "config", "emacs-init.el"));
+           "--title", "Portacle",
+           "--load", start);
   return launch(pathcat(path, root, 4, PLATFORM, "emacs", "bin", "emacs"), argc+7, rargv);
 }
 
@@ -101,26 +114,24 @@ int launch_git(char *root, int argc, char **argv){
 }
 
 int launch_sbcl(char *root, int argc, char **argv){
-  char path[PATHLEN]={0};
+  char path[PATHLEN]={0}, start[PATHLEN]={0};
   if(!set_env("SBCL_HOME", pathcat(path, root, 5, PLATFORM, "sbcl", "lib", "sbcl", ""))) return 0;
 
+  pathcat(start, root, 2, "config", "sbcl-init.lisp");
   char *rargv[argc+3];
   add_args(rargv, argc, argv, 3, "--no-sysinit",
-           "--userinit", pathcat(path, root, 2, "config", "sbcl-init.lisp"));
+           "--userinit", start);
   return launch(pathcat(path, root, 4, PLATFORM, "sbcl", "bin", "sbcl"), argc+3, rargv);
 }
 
 int configure_env(char *root){
-  char xdg[PATHLEN]={0}, bin[PATHLEN]={0}, lib[PATHLEN]={0};
-  pathcat(xdg, root, 2, "config", "");
-  pathcat(bin, root, 3, PLATFORM, "bin", "");
-  pathcat(lib, root, 3, PLATFORM, "lib", "");
-  
-  if(!set_env("ROOT", root)) return 0;
-  if(!set_env("XDG_CONFIG_HOME", xdg)) return 0;
-  if(!add_env("PATH", bin)) return 0;
-  if(!add_env(LIBRARY_VAR, lib)) return 0;
+  char path[PATHLEN]={0};  
 
+  if(!set_env("ROOT", root)) return 0;
+  if(!set_env("XDG_CONFIG_HOME", pathcat(path, root, 2, "config", ""))) return 0;
+  if(!add_env("PATH", pathcat(path, root, 3, PLATFORM, "bin", ""))) return 0;
+  if(!add_env(LIBRARY_VAR, pathcat(path, root, 3, PLATFORM, "lib", ""))) return 0;
+  
   return 1;
 }
 
@@ -142,6 +153,7 @@ int find_root(char *root){
     if(rootp == -1) return 0;
     path_up(root);
   }
+  strcat(root, PATHSEP);
 }
 
 int main(int argc, char **argv){
