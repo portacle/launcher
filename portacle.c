@@ -75,7 +75,8 @@ int launch_emacs(char *root, int argc, char **argv){
   if(!dir) return 0;
   struct dirent *entry;
   while((entry = readdir(dir)) != 0){
-    if(!add_env("EMACSLOADPATH", pathcat(path, share, 3, "lisp", entry->d_name, ""))) return 0;
+    if(entry->d_type == DT_DIR)
+      if(!add_env("EMACSLOADPATH", pathcat(path, share, 3, "lisp", entry->d_name, ""))) return 0;
   }
   closedir(dir);
   
