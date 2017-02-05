@@ -71,6 +71,9 @@ int launch(char *path, int argc, char **argv){
   }
   rargv[argc+3] = 0;
 
+  for(int i=0; rargv[i]; ++i)
+    printf("> %s\n", rargv[i]);
+
   extern char **environ;
   if(execve(loader, rargv, environ) < 0)
     return 0;
