@@ -80,6 +80,7 @@ int launch_emacs(char *root, int argc, char **argv){
   if(!emacs_version(root, version)) return 0;
   pathcat(share, root, 5, PLATFORM, "emacs", "share", "emacs", version);
   if(!set_env("EMACSLOADPATH", "")) return 0;
+  if(!add_env("EMACSLOADPATH", pathcat(path, root, 2, "config", ""))) return 0;
   if(!add_env("EMACSLOADPATH", pathcat(path, share, 2, "site-lisp", ""))) return 0;
   if(!add_env("EMACSLOADPATH", pathcat(path, share, 2, "lisp", ""))) return 0;
   DIR *dir = opendir(path);
