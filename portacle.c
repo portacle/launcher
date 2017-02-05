@@ -136,6 +136,14 @@ int launch_sbcl(char *root, int argc, char **argv){
 #endif
 }
 
+int launch_ash(char *root, int argc, char **argv){
+  char path[PATHLEN]={0};
+  if(!set_env("LD_PRELOAD", pathcat(path, root, 3, PLATFORM, "launcher", "ld-wrap.so"))) return 0;
+
+  pathcat(path, root, 3, PLATFORM, "bin", "ash");
+  return launch(path, argc, argv);
+}
+
 int configure_env(char *root){
   char path[PATHLEN]={0};  
 
@@ -225,6 +233,11 @@ int main(int argc, char **argv){
   }else if(strcmp(app, "sbcl") == 0){
     if(!launch_sbcl(root, argc, argv)){
       fprintf(stderr, "Fatal: failed to launch SBCL.\n");
+      return 2;
+    }
+  }else if(strcmp(app, "ash") == 0){
+    if(!launch_ash(root, argc, argv)){
+      fprintf(stderr, "Fatal: failed to launch ASH.\n");
       return 2;
     }
   }else{
