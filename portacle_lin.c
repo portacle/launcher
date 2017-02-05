@@ -3,8 +3,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <libgen.h>
+#include <stdio.h>
 
-#define LIN
+#define LIN 1
 #define PLATFORM "lin"
 #define LIBRARY_VAR "LD_LIBRARY_PATH"
 #define PATHSEP "/"
@@ -56,13 +57,22 @@ int execpath(char *root, char *nameish, char *target){
 }
 
 int launch(char *path, int argc, char **argv){
-  extern char **environ;
-  char *rargv[argc+1];
-  for(int i=0; i<argc; ++i){
-    rargv[i] = argv[i];
+  char libpath[PATHLEN], loader[PATHLEN];
+  get_env("LW_LIBRARY_PATH", libpath);
+  get_env("LW_LOADER_PATH", loader);
+  
+  char *rargv[argc+4];
+  rargv[0] = argv[0];
+  rargv[1] = "--library-path";
+  rargv[2] = libpath;
+  rargv[3] = path;
+  for(int i=1; i<argc; ++i){
+    rargv[i+3] = argv[i];
   }
-  rargv[argc] = 0;
-  if(execve(path, rargv, environ) < 0)
+  rargv[argc+3] = 0;
+
+  extern char **environ;
+  if(execve(loader, rargv, environ) < 0)
     return 0;
   return 1;
 }

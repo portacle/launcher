@@ -110,18 +110,28 @@ int launch_emacs(char *root, int argc, char **argv){
 
 int launch_git(char *root, int argc, char **argv){
   char path[PATHLEN]={0};
-  return launch(pathcat(path, root, 4, PLATFORM, "git", "bin", "git"), argc, argv);
+  pathcat(path, root, 4, PLATFORM, "git", "bin", "git");
+
+  return launch(path, argc, argv);
 }
 
 int launch_sbcl(char *root, int argc, char **argv){
   char path[PATHLEN]={0}, start[PATHLEN]={0};
   if(!set_env("SBCL_HOME", pathcat(path, root, 5, PLATFORM, "sbcl", "lib", "sbcl", ""))) return 0;
 
+  pathcat(path, root, 4, PLATFORM, "sbcl", "bin", "sbcl");
   pathcat(start, root, 2, "config", "sbcl-init.lisp");
+#ifdef LIN
+  char *rargv[argc+4];
+  add_args(rargv, argc, argv, 4, path, "--no-sysinit",
+           "--userinit", start);
+  return launch(path, argc+4, rargv);
+#else
   char *rargv[argc+3];
   add_args(rargv, argc, argv, 3, "--no-sysinit",
            "--userinit", start);
-  return launch(pathcat(path, root, 4, PLATFORM, "sbcl", "bin", "sbcl"), argc+3, rargv);
+  return launch(path, argc+3, rargv);
+#endif
 }
 
 int configure_env(char *root){
@@ -130,7 +140,8 @@ int configure_env(char *root){
   if(!set_env("ROOT", root)) return 0;
   if(!set_env("XDG_CONFIG_HOME", pathcat(path, root, 2, "config", ""))) return 0;
   if(!add_env("PATH", pathcat(path, root, 3, PLATFORM, "bin", ""))) return 0;
-  if(!add_env(LIBRARY_VAR, pathcat(path, root, 3, PLATFORM, "lib", ""))) return 0;
+  if(!set_env("LW_LIBRARY_PATH", pathcat(path, root, 3, PLATFORM, "lib", ""))) return 0;
+  if(!set_env("LW_LOADER_PATH", pathcat(path, root, 3, PLATFORM, "lib", "ld-linux-x86-64.so.2"))) return 0;
   
   return 1;
 }
