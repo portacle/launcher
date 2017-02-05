@@ -165,6 +165,7 @@ int find_root(char *root){
     path_up(root);
   }
   strcat(root, PATHSEP);
+  return 1;
 }
 
 int main(int argc, char **argv){
