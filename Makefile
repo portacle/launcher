@@ -1,4 +1,4 @@
-CC=gcc -std=c99 -Wall
+CC=gcc -std=c99 -Wall -D_GNU_SOURCE
 
 all:
 
