@@ -111,14 +111,15 @@ int launch_emacs(char *root, int argc, char **argv){
 
 int launch_git(char *root, int argc, char **argv){
   char path[PATHLEN]={0};
+  if(!set_env("LD_PRELOAD", pathcat(path, root, 3, PLATFORM, "launcher", "ld-wrap.so"))) return 0;
   pathcat(path, root, 4, PLATFORM, "git", "bin", "git");
-
   return launch(path, argc, argv);
 }
 
 int launch_sbcl(char *root, int argc, char **argv){
   char path[PATHLEN]={0}, start[PATHLEN]={0};
   if(!set_env("SBCL_HOME", pathcat(path, root, 5, PLATFORM, "sbcl", "lib", "sbcl", ""))) return 0;
+  if(!set_env("LD_PRELOAD", pathcat(path, root, 3, PLATFORM, "launcher", "ld-wrap.so"))) return 0;
 
   pathcat(path, root, 4, PLATFORM, "sbcl", "bin", "sbcl");
   pathcat(start, root, 2, "config", "sbcl-init.lisp");
@@ -143,6 +144,7 @@ int configure_env(char *root){
   if(!add_env("PATH", pathcat(path, root, 3, PLATFORM, "bin", ""))) return 0;
   if(!set_env("LW_LIBRARY_PATH", pathcat(path, root, 3, PLATFORM, "lib", ""))) return 0;
   if(!set_env("LW_LOADER_PATH", pathcat(path, root, 3, PLATFORM, "lib", "ld-linux-x86-64.so.2"))) return 0;
+  if(!set_env("LW_SHELL", pathcat(path, root, 3, PLATFORM, "bin", "ash"))) return 0;
   
   return 1;
 }
