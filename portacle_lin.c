@@ -56,12 +56,29 @@ int execpath(char *root, char *nameish, char *target){
   return 1;
 }
 
-int launch(char *path, int argc, char **argv){
+int launch(char *path, int argc, char **argv){  
+  extern char **environ;
+  char *rargv[argc+1];
+  for(int i=0; i<argc; ++i){
+    rargv[i] = argv[i];
+  }
+  rargv[argc] = 0;
+  
+  printf(">>%s\n", path);
+  for(int i=0; rargv[i]; ++i)
+    printf("> %s\n", rargv[i]);
+  
+  if(execve(path, rargv, environ) < 0)
+    return 0;
+  return 1;
+}
+
+int launch_ld(char *path, int argc, char **argv){
   char libpath[PATHLEN], loader[PATHLEN];
   get_env("LW_LIBRARY_PATH", libpath);
   get_env("LW_LOADER_PATH", loader);
   
-  char *rargv[argc+4];
+  char *rargv[argc+3];
   rargv[0] = argv[0];
   rargv[1] = "--library-path";
   rargv[2] = libpath;
@@ -69,13 +86,5 @@ int launch(char *path, int argc, char **argv){
   for(int i=1; i<argc; ++i){
     rargv[i+3] = argv[i];
   }
-  rargv[argc+3] = 0;
-
-  for(int i=0; rargv[i]; ++i)
-    printf("> %s\n", rargv[i]);
-
-  extern char **environ;
-  if(execve(loader, rargv, environ) < 0)
-    return 0;
-  return 1;
+  return launch(loader, argc+3, rargv);
 }

@@ -106,40 +106,42 @@ int launch_emacs(char *root, int argc, char **argv){
            "--name", "Portacle",
            "--title", "Portacle",
            "--load", start);
-  return launch(pathcat(path, root, 4, PLATFORM, "emacs", "bin", "emacs"), argc+7, rargv);
+
+  pathcat(path, root, 4, PLATFORM, "emacs", "bin", "emacs");
+#ifdef LIN
+  return launch_ld(path, argc+7, rargv);
+#else
+  return launch(path, argc+7, rargv);
+#endif
 }
 
 int launch_git(char *root, int argc, char **argv){
   char path[PATHLEN]={0};
   if(!set_env("LD_PRELOAD", pathcat(path, root, 3, PLATFORM, "launcher", "ld-wrap.so"))) return 0;
+  
   pathcat(path, root, 4, PLATFORM, "git", "bin", "git");
+#ifdef LIN
+  return launch_ld(path, argc, argv);
+#else
   return launch(path, argc, argv);
+#endif
 }
 
 int launch_sbcl(char *root, int argc, char **argv){
   char path[PATHLEN]={0}, start[PATHLEN]={0};
   if(!set_env("SBCL_HOME", pathcat(path, root, 5, PLATFORM, "sbcl", "lib", "sbcl", ""))) return 0;
-  if(!set_env("LD_PRELOAD", pathcat(path, root, 3, PLATFORM, "launcher", "ld-wrap.so"))) return 0;
 
-  pathcat(path, root, 4, PLATFORM, "sbcl", "bin", "sbcl");
-  pathcat(start, root, 2, "config", "sbcl-init.lisp");
-#ifdef LIN
-  char *rargv[argc+4];
-  add_args(rargv, argc, argv, 4, path, "--no-sysinit",
-           "--userinit", start);
-  return launch(path, argc+4, rargv);
-#else
+  pathcat(start, root, 2, "config", "sbcl-init.lisp");  
   char *rargv[argc+3];
   add_args(rargv, argc, argv, 3, "--no-sysinit",
            "--userinit", start);
+  
+  pathcat(path, root, 4, PLATFORM, "sbcl", "bin", "sbcl");
   return launch(path, argc+3, rargv);
-#endif
 }
 
 int launch_ash(char *root, int argc, char **argv){
-  char path[PATHLEN]={0};
-  if(!set_env("LD_PRELOAD", pathcat(path, root, 3, PLATFORM, "launcher", "ld-wrap.so"))) return 0;
-
+  char path[PATHLEN]={0};  
   pathcat(path, root, 3, PLATFORM, "bin", "ash");
   return launch(path, argc, argv);
 }
