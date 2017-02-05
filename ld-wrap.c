@@ -129,6 +129,9 @@ int execv(const char *filename, char *const argv[]){
 }
 
 int execvpe(const char *filename, char *const argv[], char *const envp[]){
+  char *shell = getenv("LW_SHELL");
+  if(!shell) shell = (char *)_PATH_BSHELL;
+  
   char *resolved = ld_wrap_resolv(filename);
   int status;
   // execvp* have the "interesting" feature that they relaunch the command
@@ -140,11 +143,11 @@ int execvpe(const char *filename, char *const argv[], char *const envp[]){
     int len;
     for(len=0; argv[len]; ++len);
     char *argv_t[len+2];
-    argv_t[0] = (char *)_PATH_BSHELL;
+    argv_t[0] = shell;
     argv_t[1] = resolved;
     for(int i=len; 0<i; --i)
       argv_t[i+1] = argv[i];
-    status = execve((char *)_PATH_BSHELL, argv_t, envp);
+    status = execve(shell, argv_t, envp);
   }
   free(resolved);
   return status;
