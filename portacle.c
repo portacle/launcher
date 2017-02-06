@@ -30,7 +30,8 @@ char *pathcat(char *path, char *root, int c, ...){
 
 int add_env(char *name, char *value){
   char ovalue[VARLEN]={0}, nvalue[VARLEN]={0};
-  if(!get_env(name, ovalue)) return 0;
+  if(!get_env(name, ovalue))
+    ovalue[0] = 0;
   strcat(nvalue, value);
   strcat(nvalue, VARSEP);
   strcat(nvalue, ovalue);
