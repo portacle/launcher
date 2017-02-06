@@ -197,8 +197,7 @@ int find_root(char *root){
 }
 
 int main(int argc, char **argv){
-  char root[PATHLEN]={0};
-  char app[PATHLEN]={0};
+  char root[PATHLEN]={0}, app[PATHLEN]={0};
   
   if(!find_root(root)){
     fprintf(stderr, "Fatal: could not determine the Portacle root directory.\n");
@@ -223,9 +222,9 @@ int main(int argc, char **argv){
     }
   }
 
-  char launch[VARLEN];
-  get_env("PORTACLE", launch);
-  if(strcmp(launch, "info") == 0){
+  char debug[VARLEN]={0};
+  get_env("PORTACLE_DEBUG", debug);
+  if(debug[0] != 0){
     char path[VARLEN]={0}, lib[VARLEN]={0};
     get_env("PATH", path);
     get_env(LIBRARY_VAR, lib);
