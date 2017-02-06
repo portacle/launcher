@@ -64,10 +64,6 @@ int launch(char *path, int argc, char **argv){
   }
   rargv[argc] = 0;
   
-  printf(">>%s\n", path);
-  for(int i=0; rargv[i]; ++i)
-    printf("> %s\n", rargv[i]);
-  
   if(execve(path, rargv, environ) < 0)
     return 0;
   return 1;
