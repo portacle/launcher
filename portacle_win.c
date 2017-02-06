@@ -1,6 +1,8 @@
 #include <windows.h>
 #include <shellapi.h>
 #include <shlwapi.h>
+#include <strings.h>
+#include <stdio.h>
 
 #define WIN
 #define UNICODE 1
@@ -43,13 +45,14 @@ int get_env(char *name, char *value){
 // Unsafe, but w/e
 int qcat(char *target, int offset, char *arg){
   target[offset] = '"';
-  offset++;
+  ++offset;
   for(int j=0; arg[j]!=0; ++j){
     if(arg[j] == '"'){
       target[offset] = '\\';
       ++offset;
     }
     target[offset] = arg[j];
+    ++offset;
   }
   target[offset] = '"';
   return offset+1;
@@ -60,13 +63,16 @@ int launch(char *path, int argc, char **argv){
   STARTUPINFO startup_info = {0};
 
   char command[VARLEN] = {0};
-  int offset = qcat(command, 0, path);
+  int offset = 0;
   for(int i=0; i<argc; ++i){
     command[offset] = ' ';
     offset = qcat(command, offset+1, argv[i]);
   }
+  strcat(path, ".exe");
+
   
-  return CreateProcess(NULL,
+  
+  return CreateProcess(path,
                        command,
                        NULL,
                        NULL,
