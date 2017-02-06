@@ -39,7 +39,11 @@ int set_env(char *name, char *value){
 }
 
 int get_env(char *name, char *value){
-  return GetEnvironmentVariable(name, value, VARLEN);
+  SetLastError(0);
+  GetEnvironmentVariable(name, value, VARLEN);
+  if(GetLastError() == ERROR_ENVVAR_NOT_FOUND)
+    return 0;
+  return 1;
 }
 
 // Unsafe, but w/e
@@ -77,7 +81,7 @@ int launch(char *path, int argc, char **argv){
                        NULL,
                        NULL,
                        FALSE,
-                       CREATE_NO_WINDOW,
+                       0,
                        NULL, 
                        NULL, 
                        &startup_info,
