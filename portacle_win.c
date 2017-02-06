@@ -68,7 +68,7 @@ int launch(char *path, int argc, char **argv){
 
   char command[VARLEN] = {0};
   int offset = 0;
-  for(int i=0; i<argc; ++i){
+  for(int i=1; i<argc; ++i){
     command[offset] = ' ';
     offset = qcat(command, offset+1, argv[i]);
   }
