@@ -1,4 +1,5 @@
 #include <mach-o/dyld.h>
+#include <sys/stat.h>
 #include <limits.h>
 #include <string.h>
 #include <unistd.h>
@@ -12,6 +13,12 @@
 #define PATHLEN PATH_MAX // Not actually accurate, but w/e
 #define VARLEN 32767     // Not actually accurate, but w/e
 #define VARSEP ":"
+
+int is_directory(char *path){
+  struct stat s;
+  if(stat(path, &s) < 0) return 0;
+  return S_ISDIR(s.st_mode);
+}
 
 int path_up(char *path){
   char *rpath = dirname(path);
