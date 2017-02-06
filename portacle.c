@@ -56,13 +56,14 @@ int add_args(char **rargv, int argc, char **argv, int c, ...){
 }
 
 int is_directory(char *root, char *name){
+  if(strcmp(name, "..") == 0 ||
+     strcmp(name, ".") == 0)
+    return 0;
   char path[PATHLEN]={0};
   pathcat(path, root, 1, name);
   struct stat s;
   if(stat(path, &s) < 0) return 0;
-  return (S_ISDIR(s.st_mode)) &&
-    strcmp(name, "..") != 0 &&
-    strcmp(name, ".") != 0;
+  return S_ISDIR(s.st_mode);
 }
 
 int emacs_version(char *root, char *version){
