@@ -198,6 +198,7 @@ int find_root(char *root){
 
 int main(int argc, char **argv){
   char root[PATHLEN]={0}, app[PATHLEN]={0};
+  setbuf(stderr, NULL);
   
   if(!find_root(root)){
     fprintf(stderr, "Fatal: could not determine the Portacle root directory.\n");

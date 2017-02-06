@@ -83,14 +83,20 @@ int launch(char *path, int argc, char **argv){
   }
   fprintf(stderr, "\n");
   
-  return CreateProcess(path,
-                       command,
-                       NULL,
-                       NULL,
-                       FALSE,
-                       0,
-                       NULL, 
-                       NULL, 
-                       &startup_info,
-                       &process_info);
+  if(!CreateProcess(path,
+                    command,
+                    NULL,
+                    NULL,
+                    FALSE,
+                    0,
+                    NULL, 
+                    NULL, 
+                    &startup_info,
+                    &process_info))
+    return 0;
+  // Wait for process to exit.
+  WaitForSingleObject(process_info.hProcess, INFINITE);
+  CloseHandle(process_info.hProcess);
+  CloseHandle(process_info.hThread);
+  return 1;
 }
