@@ -6,6 +6,7 @@
 #include "portacle_lin.c"
 #endif
 
+#include <sys/stat.h>
 #include <unistd.h>
 #include <dirent.h>
 #include <stdlib.h>
@@ -53,20 +54,24 @@ int add_args(char **rargv, int argc, char **argv, int c, ...){
   return 1;
 }
 
-int is_dir_entry(struct dirent *entry){
-  return entry->d_type == DT_DIR &&
-    strcmp(entry->d_name, "..") != 0 &&
-    strcmp(entry->d_name, ".") != 0;
+int is_directory(char *root, char *name){
+  char path[PATHLEN]={0};
+  pathcat(path, root, 1, name);
+  struct stat s;
+  if(stat(path, &s) < 0) return 0;
+  return (S_ISDIR(s.st_mode)) &&
+    strcmp(name, "..") != 0 &&
+    strcmp(name, ".") != 0;
 }
 
 int emacs_version(char *root, char *version){
-  char path[PATHLEN];
+  char path[PATHLEN]={0};
   pathcat(path, root, 4, PLATFORM, "emacs", "libexec", "emacs", "");
   DIR *dir = opendir(path);
   if(!dir) return 0;
   struct dirent *entry;
   while((entry = readdir(dir)) != 0){
-    if(is_dir_entry(entry)){
+    if(is_directory(root, entry->d_name)){
       strcpy(version, entry->d_name);
       break;
     }
@@ -87,7 +92,7 @@ int launch_emacs(char *root, int argc, char **argv){
   if(!dir) return 0;
   struct dirent *entry;
   while((entry = readdir(dir)) != 0){
-    if(is_dir_entry(entry)){
+    if(is_directory(root, entry->d_name)){
       if(!add_env("EMACSLOADPATH", pathcat(path, share, 3, "lisp", entry->d_name, ""))) return 0;
     }
   }
