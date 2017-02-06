@@ -13,12 +13,6 @@
 #define VARLEN 32767
 #define VARSEP ";"
 
-int is_directory(char *path){
-  DWORD atributes = GetFileAttributes(path);
-  return (atributes != INVALID_FILE_ATTRIBUTES && 
-          (atributes & FILE_ATTRIBUTE_DIRECTORY));
-}
-
 int path_up(char *path){
   PathRemoveBackslash(path);
   PathRemoveFileSpec(path);
