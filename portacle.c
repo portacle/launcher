@@ -228,12 +228,12 @@ int main(int argc, char **argv){
     char path[VARLEN]={0}, lib[VARLEN]={0};
     get_env("PATH", path);
     get_env(LIBRARY_VAR, lib);
-    printf("  Portacle Launcher System Info:\n");
-    printf("App:           %s\n", app);
-    printf("Platform:      %s\n", PLATFORM);
-    printf("Root:          %s\n", root);
-    printf("Binary Path:   %s\n", path);
-    printf("Library Path:  %s\n", lib);
+    fprintf(stderr, "  Portacle Launcher System Info:\n");
+    fprintf(stderr, "App:           %s\n", app);
+    fprintf(stderr, "Platform:      %s\n", PLATFORM);
+    fprintf(stderr, "Root:          %s\n", root);
+    fprintf(stderr, "Binary Path:   %s\n", path);
+    fprintf(stderr, "Library Path:  %s\n", lib);
   }
 
   if(strcmp(app, "emacs") == 0){

@@ -67,10 +67,11 @@ int launch(char *path, int argc, char **argv){
   char debug[VARLEN]={0};
   get_env("PORTACLE_DEBUG", debug);
   if(debug[0] != 0){
-    printf("Launching executable: %s\n", path);
+    fprintf(stderr, "\n  Launching executable: %s\n", path);
     for(int i=0; rargv[i]; ++i)
-      printf("argv%i %s\n", i, rargv[i]);
+      fprintf(stderr, "argv%i %s\n", i, rargv[i]);
   }
+  fprintf(stderr, "\n");
   
   if(execve(path, rargv, environ) < 0)
     return 0;
