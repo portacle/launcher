@@ -26,11 +26,9 @@ int exe_dir(char *path){
 }
 
 int app_name(char *argv0, char *name){
-  if(!GetModuleFileName(NULL, path, PATHLEN))
-    return 0;
-
-  PathStripPath(path);
-  PathRemoveExtension(path);
+  strcpy(name, argv0);
+  PathStripPath(name);
+  PathRemoveExtension(name);
   return 1;
 }
 
@@ -53,15 +51,15 @@ int qcat(char *target, int offset, char *arg){
     }
     target[offset] = arg[j];
   }
-  target[i] = '"';
-  return i+1;
+  target[offset] = '"';
+  return offset+1;
 }
 
 int launch(char *path, int argc, char **argv){
   PROCESS_INFORMATION process_info = {0};
   STARTUPINFO startup_info = {0};
 
-  char* command[VARLEN] = {0};
+  char command[VARLEN] = {0};
   int offset = qcat(command, 0, path);
   for(int i=0; i<argc; ++i){
     command[offset] = ' ';
