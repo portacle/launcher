@@ -157,6 +157,9 @@ int configure_env(char *root){
   if(!set_env("ROOT", root)) return 0;
   if(!set_env("XDG_CONFIG_HOME", pathcat(path, root, 2, "config", ""))) return 0;
   if(!add_env("PATH", pathcat(path, root, 3, PLATFORM, "bin", ""))) return 0;
+#ifdef WIN
+  if(!add_env("PATH", pathcat(path, root, 3, PLATFORM, "lib", ""))) return 0;
+#endif
   if(!set_env("LW_LIBRARY_PATH", pathcat(path, root, 3, PLATFORM, "lib", ""))) return 0;
   if(!set_env("LW_LOADER_PATH", pathcat(path, root, 3, PLATFORM, "lib", "ld-linux-x86-64.so.2"))) return 0;
   if(!set_env("LW_SHELL", pathcat(path, root, 3, PLATFORM, "bin", "ash"))) return 0;
