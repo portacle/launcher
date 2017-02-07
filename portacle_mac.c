@@ -22,7 +22,7 @@ int path_up(char *path){
 }
 
 int exe_dir(char *path){
-  int size = PATH_MAX;
+  uint32_t size = PATH_MAX;
   _NSGetExecutablePath(path, &size);
   if(!path_up(path)) return 0;
   return 1;
