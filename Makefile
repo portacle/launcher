@@ -18,7 +18,7 @@ $(OUTPUT)/win: portacle_win.c portacle.c fontreg_win.c fontreg.c
 	$(CC) -o "$(OUTPUT)/fontreg.exe" $(CFLAGS) "fontreg.c" -mwindows
 	windres -o "$(OUTPUT)/portacle.res" "portacle.rc" -O coff
 	$(CC) -o "$(OUTPUT)/portacle.exe" $(CFLAGS) "portacle.c" "$(OUTPUT)/portacle.res" -lshlwapi -mwindows -mconsole
-	touch "$(OUTPUT)/win)"
+	touch "$(OUTPUT)/win"
 
 mac: $(OUTPUT)/mac
 $(OUTPUT)/mac: portacle_mac.c portacle.c fontreg_lin.c fontreg.c
