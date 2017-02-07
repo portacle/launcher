@@ -22,6 +22,6 @@ $(OUTPUT)/win: portacle_win.c portacle.c fontreg_win.c fontreg.c
 
 mac: $(OUTPUT)/mac
 $(OUTPUT)/mac: portacle_mac.c portacle.c fontreg_lin.c fontreg.c
-	$(CC) -o "$(OUTPUT)/fontreg" $(CFLAGS) -static "fontreg.c"
-	$(CC) -o "$(OUTPUT)/portacle" $(CFLAGS) -static "portacle.c"
+	$(CC) -o "$(OUTPUT)/fontreg" $(CFLAGS) "fontreg.c"
+	$(CC) -o "$(OUTPUT)/portacle" $(CFLAGS) "portacle.c"
 	touch "$(OUTPUT)/mac"
