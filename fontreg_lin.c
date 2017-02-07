@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <libgen.h>
+#include <stdio.h>
 
 int run(int argc, ...){
   char *argv[argc+1];
@@ -25,22 +26,27 @@ int run(int argc, ...){
   }else{
     int status;
     waitpid(pid, &status, 0);
-    return status;
+    return !status;
   }
 }
 
 int add_font(char *file){
   char *name = basename(file);
-  char *cache = "~/.fonts/";
-  char target[3000];
+  char *home = getenv("HOME");
+  char target[3000], fonts[3000];
 
-  strcpy(target, cache);
+  strcpy(fonts, home);
+  strcat(fonts, "/.fonts/");
+  strcpy(target, fonts);
   strcat(target, name);
-
+  
   if(access(target, F_OK) == -1){
-    run(3, "/usr/bin/mkdir", "-p", cache);
-    run(4, "/usr/bin/cp", "-p", file, target);
-    run(2, "/usr/bin/fc-cache", cache);
+    if(!run(3, "/usr/bin/mkdir", "-p", fonts))
+      return 0;
+    if(!run(4, "/usr/bin/cp", "-p", file, target))
+      return 0;
+    if(!run(2, "/usr/bin/fc-cache", fonts))
+      return 0;
   }
-  return 0;
+  return 1;
 }
