@@ -1,31 +1,20 @@
-#include<windows.h>
+#include <stdio.h>
 
-int resolve_path(char *path, char *resolved){
-  int len = GetFullPathName(path, MAX_PATH, resolved, 0);
-  if(MAX_PATH < len)
-    return 1;
-  if(len <= 0)
-    return 2;
-  return 0;
-}
-
-int add_font(char *file){
-  char font[MAX_PATH] = "";
-
-  if(resolve_path(file, font) != 0)
-    return 1;
-    
-  if(AddFontResource(font) == 0)
-    return 2;
-
-  SendMessage(HWND_BROADCAST, WM_FONTCHANGE, 0, 0);
-  return 0;
-}
+#if defined(_WIN32) || defined(WIN32)
+#include "fontreg_win.c"
+#elif defined(__APPLE__)
+#include "fontreg_mac.c"
+#elif defined(__linux__)
+#include "fontreg_lin.c"
+#endif
 
 int main(int argc, char **argv){
+  int exit = 0;
   for(int i=1; i<argc; ++i){
-    if(add_font(argv[i]) != 0)
-      return i+1;
+    if(!add_font(argv[i])){
+      ++exit;
+      fprintf(stderr, "Failed to add font %s\n", argv[i]);
+    }
   }
-  return 0;
+  return exit;
 }
