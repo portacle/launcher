@@ -45,7 +45,7 @@ int set_env(char *name, char *value){
 int get_env(char *name, char *value){
   char *rvalue = getenv(name);
   if(rvalue == NULL) return 0;
-  strcpy(rvalue, value);
+  strcpy(value, rvalue);
   return 1;
 }
 
@@ -62,6 +62,7 @@ int launch(char *path, int argc, char **argv){
   for(int i=0; i<argc; ++i){
     rargv[i] = argv[i];
   }
+  rargv[argc] = 0;
 
   char debug[VARLEN]={0};
   get_env("PORTACLE_DEBUG", debug);
