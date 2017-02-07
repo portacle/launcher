@@ -8,7 +8,7 @@ all:
 
 lin: $(OUTPUT)/lin
 $(OUTPUT)/lin: portacle_lin.c portacle.c fontreg_lin.c fontreg.c ld-wrap.c
-	$(CC) -o "$(OUTPUT)/ld-wrap.so" $(CFLAGS) -D_GNU_SOURCE -fPIC -shared -ldl -Wl,-init,init "ld-wrap.c"
+	$(CC) -o "$(OUTPUT)/ld-wrap.so" $(CFLAGS) -D_GNU_SOURCE -fPIC -shared -ldl -Wl,-init,init "ld-wrap.c" -ldl
 	$(CC) -o "$(OUTPUT)/fontreg" $(CFLAGS) "fontreg.c"
 	$(CC) -o "$(OUTPUT)/portacle" $(CFLAGS) -D_GNU_SOURCE "portacle.c"
 	touch "$(OUTPUT)/lin"
