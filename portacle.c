@@ -136,6 +136,7 @@ int launch_emacs(char *root, int argc, char **argv){
 int launch_git(char *root, int argc, char **argv){
   char path[PATHLEN]={0};
   if(!set_env("LD_PRELOAD", pathcat(path, root, 3, PLATFORM, "launcher", "ld-wrap.so"))) return 0;
+  if(!add_env("PATH", pathcat(path, root, 5, PLATFORM, "git", "libexec", "git-core", ""))) return 0;
   
   pathcat(path, root, 4, PLATFORM, "git", "bin", "git");
 #ifdef LIN
