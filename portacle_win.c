@@ -62,6 +62,7 @@ int qcat(char *target, int offset, char *arg){
   return offset+1;
 }
 
+int win_create_flags = 0;
 int launch(char *path, int argc, char **argv){
   PROCESS_INFORMATION process_info = {0};
   STARTUPINFO startup_info = {0};
@@ -88,7 +89,7 @@ int launch(char *path, int argc, char **argv){
                     NULL,
                     NULL,
                     FALSE,
-                    0,
+                    win_create_flags,
                     NULL, 
                     NULL, 
                     &startup_info,

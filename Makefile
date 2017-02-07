@@ -9,7 +9,7 @@ lin:
 win:
 	$(CC) -o "fontreg.exe" -mwindows "fontreg.c"
 	windres "portacle.rc" -O coff -o "portacle.res"
-	$(CC) -o "portacle.exe" "portacle.c" "portacle.res" -lshlwapi 
+	$(CC) -o "portacle.exe" "portacle.c" "portacle.res" -lshlwapi -mwindows -mconsole
 
 mac:
 	$(CC) -o "portacle" "portacle.c"

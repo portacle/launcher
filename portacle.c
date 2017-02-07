@@ -119,6 +119,12 @@ int launch_emacs(char *root, int argc, char **argv){
            "--title", "Portacle",
            "--load", start);
 
+  // Ensure the console disappears on Windows.
+#ifdef WIN
+  FreeConsole();
+  win_create_flags = CREATE_NO_WINDOW;
+#endif
+
   pathcat(path, root, 4, PLATFORM, "emacs", "bin", "emacs");
 #ifdef LIN
   return launch_ld(path, argc+7, rargv);
