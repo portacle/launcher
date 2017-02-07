@@ -70,8 +70,8 @@ int launch(char *path, int argc, char **argv){
     fprintf(stderr, "\n  Launching executable: %s\n", path);
     for(int i=0; rargv[i]; ++i)
       fprintf(stderr, "argv%i %s\n", i, rargv[i]);
+    fprintf(stderr, "\n");
   }
-  fprintf(stderr, "\n");
   
   if(execve(path, rargv, environ) < 0)
     return 0;

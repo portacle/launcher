@@ -81,8 +81,8 @@ int launch(char *path, int argc, char **argv){
     fprintf(stderr, "\n  Launching executable: %s\n", path);
     for(int i=0; i<argc; ++i)
       fprintf(stderr, "argv%i %s\n", i, argv[i]);
+    fprintf(stderr, "\n");
   }
-  fprintf(stderr, "\n");
   
   if(!CreateProcess(path,
                     command,
