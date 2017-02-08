@@ -14,7 +14,7 @@ $(OUTPUT)/lin: portacle_lin.c portacle.c fontreg_lin.c fontreg.c ld-wrap.c Makef
 	touch "$(OUTPUT)/lin"
 
 win: $(OUTPUT)/win
-$(OUTPUT)/win: portacle_win.c portacle.c fontreg_win.c fontreg.c Makefile
+$(OUTPUT)/win: portacle_win.c portacle.c portacle.rc portacle.ico fontreg_win.c fontreg.c Makefile
 	$(CC) -o "$(OUTPUT)/fontreg.exe" $(CFLAGS) "fontreg.c" -mwindows
 	windres -o "$(OUTPUT)/portacle.res" "portacle.rc" -O coff
 	$(CC) -o "$(OUTPUT)/portacle.exe" $(CFLAGS) "portacle.c" "$(OUTPUT)/portacle.res" -lshlwapi -mwindows -mconsole
