@@ -70,7 +70,7 @@ char *ld_wrap_path(){
 }
 
 int ld_wrap_static_p(const char *filename){
-  char *argv[] = {"/bin/ldd", filename, 0};
+  char *argv[] = {"/usr/bin/ldd", filename, 0};
   char *env[] = {0};
   
   pid_t pid = fork();
@@ -81,7 +81,7 @@ int ld_wrap_static_p(const char *filename){
     dup2(fd, 1);
     dup2(fd, 2);
     close(fd);
-    return o_execve("/bin/ldd", argv, env);
+    return o_execve("/usr/bin/ldd", argv, env);
   }else{
     int status;
     waitpid(pid, &status, 0);
