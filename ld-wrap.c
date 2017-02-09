@@ -5,6 +5,10 @@
 #include <stdarg.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <paths.h>
 
@@ -21,11 +25,10 @@ char **ld_wrap_argv(const char *filename, char *const argv[]){
   int len;
   for(len=0; argv[len]; ++len);
   char **argv_t = calloc(len+4, sizeof(char *));
-
-  // Short-circuit cycles
-  if(len >= 4
-     && strcmp(argv[1], "--library-path") == 0
-     && strcmp(argv[2], getenv("LW_LIBRARY_PATH")) == 0){
+  
+  if((len >= 4
+      && strcmp(argv[1], "--library-path") == 0
+      && strcmp(argv[2], getenv("LW_LIBRARY_PATH")) == 0)){
     for(int i=0; argv[i]; ++i){
       argv_t[i] = argv[i];
     }
@@ -66,9 +69,36 @@ char *ld_wrap_path(){
   }
 }
 
+int ld_wrap_static_p(const char *filename){
+  char *argv[] = {"/bin/ldd", filename, 0};
+  char *env[] = {0};
+  
+  pid_t pid = fork();
+  if(pid < 0){
+    return 1;
+  }else if(pid == 0){
+    int fd = open("/dev/null", O_WRONLY);
+    dup2(fd, 1);
+    dup2(fd, 2);
+    close(fd);
+    return o_execve("/bin/ldd", argv, env);
+  }else{
+    int status;
+    waitpid(pid, &status, 0);
+    return (status != 0);
+  }
+  return 0;
+}
+
+int ld_wrap_system_p(const char *filename){
+  char *root = getenv("ROOT");
+  return strncmp(filename, root, strlen(root)) != 0;
+}
+
+
 // Returns true if the given filename exists, is a
 // file and has the executable bit set.
-int ld_wrap_exe_p(char *filename){
+int ld_wrap_exe_p(const char *filename){
   struct stat st;
   return (stat(filename, &st) == 0)
     && S_ISREG(st.st_mode) 
@@ -108,7 +138,7 @@ char *ld_wrap_resolv(const char *filename){
   return resolved;
 }
 
-int ld_wrap_elf_p(char *filename){
+int ld_wrap_elf_p(const char *filename){
   FILE *ldfile = fopen(filename, "rb");
   if(ldfile != NULL){
     char header[4];
@@ -125,12 +155,19 @@ int ld_wrap_elf_p(char *filename){
 }
 
 int execve(const char *filename, char *const argv[], char *const envp[]){
-  const char *loader = getenv("LW_LOADER_PATH");
-  char **argv_t = ld_wrap_argv(filename, argv);
-  ld_wrap_log(loader, argv_t);
-  int status = o_execve(loader, argv_t, envp);
-  free(argv_t);
-  return status;
+  if(ld_wrap_static_p(filename)
+     || ld_wrap_system_p(filename)
+     || !ld_wrap_elf_p(filename)){
+    ld_wrap_log(filename, argv);
+    return o_execve(filename, argv, envp);
+  }else{
+    const char *loader = getenv("LW_LOADER_PATH");
+    char **argv_t = ld_wrap_argv(filename, argv);
+    ld_wrap_log(loader, argv_t);
+    int status = o_execve(loader, argv_t, envp);
+    free(argv_t);
+    return status;
+  }
 }
 
 int execv(const char *filename, char *const argv[]){
