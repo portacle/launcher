@@ -6,6 +6,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+int exitCode = 0;
+
 #if defined(_WIN32) || defined(WIN32)
 #include "portacle_win.c"
 #elif defined(__APPLE__)
@@ -271,5 +273,5 @@ int main(int argc, char **argv){
     return 3;
   }
   
-  return 0;
+  return exitCode;
 }

@@ -97,6 +97,7 @@ int launch(char *path, int argc, char **argv){
     return 0;
   // Wait for process to exit.
   WaitForSingleObject(process_info.hProcess, INFINITE);
+  GetExitCodeProcess(process_info.hProcess, &exitCode);
   CloseHandle(process_info.hProcess);
   CloseHandle(process_info.hThread);
   return 1;
