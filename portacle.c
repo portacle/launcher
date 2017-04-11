@@ -177,6 +177,17 @@ int launch_hunspell(char *root, int argc, char **argv){
   return launch_maybe_ld(path, argc, argv);
 }
 
+int launch_fontreg(char *root, int argc, char **argv){
+  int exit = 0;
+  for(int i=1; i<argc; ++i){
+    if(!add_font(argv[i])){
+      ++exit;
+      fprintf(stderr, "Failed to add font %s\n", argv[i]);
+    }
+  }
+  return exit;
+}
+
 int configure_env(char *root){
   char path[PATHLEN]={0};  
 
@@ -280,6 +291,11 @@ int main(int argc, char **argv){
   }else if(strcmp(app, "hunspell") == 0){
     if(!launch_hunspell(root, argc, argv)){
       fprintf(stderr, "Fatal: failed to launch HUNSPELL.\n");
+      return 2;
+    }
+  }else if(strcmp(app, "fontreg") == 0){
+    if(!launch_fontreg(root, argc, argv)){
+      fprintf(stderr, "Fatal: failed to launch FONTREG.\n");
       return 2;
     }
   }else{

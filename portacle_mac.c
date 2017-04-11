@@ -77,3 +77,7 @@ int launch(char *path, int argc, char **argv){
     return 0;
   return 1;
 }
+
+int add_font(char *file){
+  return 0;
+}
