@@ -168,6 +168,15 @@ int launch_ash(char *root, int argc, char **argv){
   return launch(path, argc, argv);
 }
 
+int launch_hunspell(char *root, int argc, char **argv){
+  char path[PATHLEN]={0};
+  if(!set_env("WORDLIST", pathcat(path, root, 2, "config", ".personal-dictionary"))) return 0;
+  if(!set_env("DICPATH", pathcat(path, root, 3, "all", "dictionaries", ""))) return 0;
+  
+  pathcat(path, root, 3, PLATFORM, "hunspell", "bin", "hunspell");
+  return launch_maybe_ld(path, argc, argv);
+}
+
 int configure_env(char *root){
   char path[PATHLEN]={0};  
 
@@ -266,6 +275,11 @@ int main(int argc, char **argv){
   }else if(strcmp(app, "ash") == 0){
     if(!launch_ash(root, argc, argv)){
       fprintf(stderr, "Fatal: failed to launch ASH.\n");
+      return 2;
+    }
+  }else if(strcmp(app, "hunspell") == 0){
+    if(!launch_hunspell(root, argc, argv)){
+      fprintf(stderr, "Fatal: failed to launch HUNSPELL.\n");
       return 2;
     }
   }else{
