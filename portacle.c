@@ -72,11 +72,11 @@ int is_directory_entry(char *root, char *name){
   return is_directory(path);
 }
 
-int launch_maybe_ld(char *root, int argc, char **argv){
+int launch_maybe_ld(char *path, int argc, char **argv){
 #ifdef LIN
-  return launch_ld(path, argc, rargv);
+  return launch_ld(path, argc, argv);
 #else
-  return launch(path, argc, rargv);
+  return launch(path, argc, argv);
 #endif
 }
 
