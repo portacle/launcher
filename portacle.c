@@ -72,6 +72,14 @@ int is_directory_entry(char *root, char *name){
   return is_directory(path);
 }
 
+int launch_maybe_ld(char *root, int argc, char **argv){
+#ifdef LIN
+  return launch_ld(path, argc, rargv);
+#else
+  return launch(path, argc, rargv);
+#endif
+}
+
 int emacs_version(char *root, char *version){
   char path[PATHLEN]={0};
   pathcat(path, root, 4, PLATFORM, "emacs", "libexec", "emacs", "");
@@ -128,11 +136,7 @@ int launch_emacs(char *root, int argc, char **argv){
 #endif
 
   pathcat(path, root, 4, PLATFORM, "emacs", "bin", "emacs");
-#ifdef LIN
-  return launch_ld(path, argc+7, rargv);
-#else
-  return launch(path, argc+7, rargv);
-#endif
+  return launch_maybe_ld(path, argc+7, rargv);
 }
 
 int launch_git(char *root, int argc, char **argv){
@@ -143,11 +147,7 @@ int launch_git(char *root, int argc, char **argv){
   if(!add_env("PATH", pathcat(path, root, 5, PLATFORM, "git", "libexec", "git-core", ""))) return 0;
   
   pathcat(path, root, 4, PLATFORM, "git", "bin", "git");
-#ifdef LIN
-  return launch_ld(path, argc, argv);
-#else
-  return launch(path, argc, argv);
-#endif
+  return launch_maybe_ld(path, argc, argv);
 }
 
 int launch_sbcl(char *root, int argc, char **argv){
