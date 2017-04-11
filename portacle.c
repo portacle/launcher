@@ -173,7 +173,7 @@ int launch_hunspell(char *root, int argc, char **argv){
   if(!set_env("WORDLIST", pathcat(path, root, 2, "config", ".personal-dictionary"))) return 0;
   if(!set_env("DICPATH", pathcat(path, root, 3, "all", "dictionaries", ""))) return 0;
   
-  pathcat(path, root, 3, PLATFORM, "hunspell", "bin", "hunspell");
+  pathcat(path, root, 4, PLATFORM, "hunspell", "bin", "hunspell");
   return launch_maybe_ld(path, argc, argv);
 }
 
