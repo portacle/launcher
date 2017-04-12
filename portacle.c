@@ -233,15 +233,15 @@ int main(int argc, char **argv){
   
   if(!find_root(root)){
     fprintf(stderr, "Fatal: could not determine the Portacle root directory.\n");
-    return 1;
+    return 100;
   }
   if(!app_name(argv[0], app)){
     fprintf(stderr, "Fatal: could not determine the application name.\n");
-    return 1;
+    return 101;
   }
   if(!configure_env(root)){
     fprintf(stderr, "Fatal: could not configure environment properly.\n");
-    return 1;
+    return 102;
   }
 
   if(strcmp(app, "portacle") == 0){
@@ -271,36 +271,36 @@ int main(int argc, char **argv){
   if(strcmp(app, "emacs") == 0){
     if(!launch_emacs(root, argc, argv)){
       fprintf(stderr, "Fatal: failed to launch Emacs.\n");
-      return 2;
+      return 103;
     }
   }else if(strcmp(app, "git") == 0){
     if(!launch_git(root, argc, argv)){
       fprintf(stderr, "Fatal: failed to launch GIT.\n");
-      return 2;
+      return 103;
     }
   }else if(strcmp(app, "sbcl") == 0){
     if(!launch_sbcl(root, argc, argv)){
       fprintf(stderr, "Fatal: failed to launch SBCL.\n");
-      return 2;
+      return 103;
     }
   }else if(strcmp(app, "ash") == 0){
     if(!launch_ash(root, argc, argv)){
       fprintf(stderr, "Fatal: failed to launch ASH.\n");
-      return 2;
+      return 103;
     }
   }else if(strcmp(app, "hunspell") == 0){
     if(!launch_hunspell(root, argc, argv)){
       fprintf(stderr, "Fatal: failed to launch HUNSPELL.\n");
-      return 2;
+      return 103;
     }
   }else if(strcmp(app, "fontreg") == 0){
     if(!launch_fontreg(root, argc, argv)){
       fprintf(stderr, "Fatal: failed to launch FONTREG.\n");
-      return 2;
+      return 103;
     }
   }else{
     fprintf(stderr, "Fatal: Unknown application: %s\n", app);
-    return 3;
+    return 104;
   }
   
   return exitCode;
