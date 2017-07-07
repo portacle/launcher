@@ -1,84 +1,4 @@
-#include <sys/stat.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdio.h>
-
-int exitCode = 0;
-
-#if defined(_WIN32) || defined(WIN32)
-#include "portacle_win.c"
-#elif defined(__APPLE__)
-#include "portacle_mac.c"
-#elif defined(__linux__)
-#include "portacle_lin.c"
-#endif
-
-char *pathcat(char *path, char *root, int c, ...){
-  strcpy(path, root);
-  
-  va_list argp;
-  va_start(argp, c);
-  for(int i=0; i<c; ++i){
-    char *part = va_arg(argp, char *);
-    strcat(path, PATHSEP);
-    strcat(path, part);
-  }
-  va_end(argp);
-  return path;
-}
-
-int add_env(char *name, char *value){
-  char ovalue[VARLEN]={0}, nvalue[VARLEN]={0};
-  if(!get_env(name, ovalue))
-    ovalue[0] = 0;
-  strcat(nvalue, value);
-  strcat(nvalue, VARSEP);
-  strcat(nvalue, ovalue);
-  if(!set_env(name, nvalue)) return 0;
-  return 1;
-}
-
-int add_args(char **rargv, int argc, char **argv, int c, ...){  
-  va_list argp;
-  va_start(argp, c);
-  rargv[0] = argv[0];
-  for(int i=0; i<c; ++i){
-    char *part = va_arg(argp, char *);
-    rargv[i+1] = part;
-  }
-  va_end(argp);
-
-  for(int i=1; i<argc; i++){
-    rargv[i+c] = argv[i];
-  }
-  return 1;
-}
-
-int is_directory(char *path){
-  struct stat s;
-  if(stat(path, &s) < 0) return 0;
-  return S_ISDIR(s.st_mode);
-}
-
-int is_directory_entry(char *root, char *name){
-  if(strcmp(name, "..") == 0 ||
-     strcmp(name, ".") == 0)
-    return 0;
-  char path[PATHLEN]={0};
-  pathcat(path, root, 1, name);
-  return is_directory(path);
-}
-
-int launch_maybe_ld(char *path, int argc, char **argv){
-#ifdef LIN
-  return launch_ld(path, argc, argv);
-#else
-  return launch(path, argc, argv);
-#endif
-}
+#include "toolkit.c"
 
 int emacs_version(char *root, char *version){
   char path[PATHLEN]={0};
@@ -177,6 +97,14 @@ int launch_hunspell(char *root, int argc, char **argv){
   return launch_maybe_ld(path, argc, argv);
 }
 
+int launch_credentials(char *root, int argc, char **argv){
+  char path[PATHLEN]={0};
+  if(!set_env("CREDENTIALS", pathcat(path, root, 2, "config", ".credentials"))) return 0;
+
+  pathcat(path, root, 4, PLATFORM, "launcher", "credentials");
+  return launch_maybe_ld(path, argc, argv);
+}
+
 int launch_fontreg(char *root, int argc, char **argv){
   int exit = 0;
   for(int i=1; i<argc; ++i){
@@ -186,6 +114,24 @@ int launch_fontreg(char *root, int argc, char **argv){
     }
   }
   return exit;
+}
+
+int launch_query(char *root, int argc, char **argv){
+  if(argc <= 1){
+    fprintf(stderr, "Possible queries:\n");
+    fprintf(stderr, "apps platform root\n");
+  }else{
+    char *query_result = "unknown";
+    /**/ if(streq(argv[1], "apps")) query_result = "query credentials emacs git sbcl ash hunspell fontreg";
+    else if(streq(argv[1], "platform")) query_result = PLATFORM;
+    else if(streq(argv[1], "root")) query_result = root;
+    fprintf(stdout, "%s\n", query_result);
+  }
+  return 1;
+}
+
+int launch_unknown(char *root, int argc, char **argv){
+  return 0;
 }
 
 int configure_env(char *root){
@@ -203,34 +149,12 @@ int configure_env(char *root){
   //if(!set_env("LW_SHELL", pathcat(path, root, 3, PLATFORM, "bin", "ash"))) return 0;
 
   char lang[PATHLEN]={0};
-  if(!get_env("PORTACLE_LANG", lang) || strcmp(lang, "") == 0){
+  if(!get_env("PORTACLE_LANG", lang) || streq(lang, "")){
     set_env("LANG", "en_US");
   }else{
     set_env("LANG", lang);
   }
   
-  return 1;
-}
-
-int is_root(char *root){
-  char anchor[PATHLEN]={0};
-  if(strcmp(root, "") == 0
-     || strcmp(root, "/") == 0
-     || strcmp(root, ".") == 0)
-    return -1;
-  if(access(pathcat(anchor, root, 1, ".portacle_root"), F_OK) < 0)
-    return 0;
-  return 1;
-}
-
-int find_root(char *root){
-  if(!exe_dir(root)) return 0;
-  int rootp;
-  while((rootp = is_root(root)) != 1){
-    if(rootp == -1) return 0;
-    path_up(root);
-  }
-  strcat(root, PATHSEP);
   return 1;
 }
 
@@ -242,16 +166,18 @@ int main(int argc, char **argv){
     fprintf(stderr, "Fatal: could not determine the Portacle root directory.\n");
     return 100;
   }
+  
   if(!app_name(argv[0], app)){
     fprintf(stderr, "Fatal: could not determine the application name.\n");
     return 101;
   }
+  
   if(!configure_env(root)){
     fprintf(stderr, "Fatal: could not configure environment properly.\n");
     return 102;
   }
 
-  if(strcmp(app, "portacle") == 0){
+  if(streq(app, "portacle")){
     if(argc > 1){
       argc--;
       argv++;
@@ -275,39 +201,19 @@ int main(int argc, char **argv){
     fprintf(stderr, "Library Path:  %s\n", lib);
   }
 
-  if(strcmp(app, "emacs") == 0){
-    if(!launch_emacs(root, argc, argv)){
-      fprintf(stderr, "Fatal: failed to launch Emacs.\n");
-      return 103;
-    }
-  }else if(strcmp(app, "git") == 0){
-    if(!launch_git(root, argc, argv)){
-      fprintf(stderr, "Fatal: failed to launch GIT.\n");
-      return 103;
-    }
-  }else if(strcmp(app, "sbcl") == 0){
-    if(!launch_sbcl(root, argc, argv)){
-      fprintf(stderr, "Fatal: failed to launch SBCL.\n");
-      return 103;
-    }
-  }else if(strcmp(app, "ash") == 0){
-    if(!launch_ash(root, argc, argv)){
-      fprintf(stderr, "Fatal: failed to launch ASH.\n");
-      return 103;
-    }
-  }else if(strcmp(app, "hunspell") == 0){
-    if(!launch_hunspell(root, argc, argv)){
-      fprintf(stderr, "Fatal: failed to launch HUNSPELL.\n");
-      return 103;
-    }
-  }else if(strcmp(app, "fontreg") == 0){
-    if(!launch_fontreg(root, argc, argv)){
-      fprintf(stderr, "Fatal: failed to launch FONTREG.\n");
-      return 103;
-    }
-  }else{
-    fprintf(stderr, "Fatal: Unknown application: %s\n", app);
-    return 104;
+  int (*app_launcher)(char *root, int argc, char **argv) = launch_unknown;
+  if(streq(app, "query")) app_launcher = launch_query;
+  else if(streq(app, "emacs")) app_launcher = launch_emacs;
+  else if(streq(app, "git")) app_launcher = launch_git;
+  else if(streq(app, "sbcl")) app_launcher = launch_sbcl;
+  else if(streq(app, "ash")) app_launcher = launch_ash;
+  else if(streq(app, "hunspell")) app_launcher = launch_hunspell;
+  else if(streq(app, "fontreg")) app_launcher = launch_fontreg;
+  else if(streq(app, "credentials")) app_launcher = launch_credentials;
+
+  if(!app_launcher(root, argc, argv)){
+    fprintf(stderr, "Fatal: failed to launch %s.\n", app);
+    exitCode = 103;
   }
   
   return exitCode;
