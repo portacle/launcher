@@ -241,20 +241,18 @@ int credentials_read(FILE *stream, struct credentials *out, int decrypt){
 }
 
 int credentials_write(FILE *stream, struct credentials *out, int encrypt){
-  if(out->protocol[0] != 0) fprintf(stream, "protocol=%s\n", out->protocol);
-  if(out->host[0] != 0) fprintf(stream, "host=%s\n", out->host);
-  if(out->path[0] != 0) fprintf(stream, "path=%s\n", out->path);
-  if(out->username[0] != 0) fprintf(stream, "username=%s\n", out->username);
-  if(out->password[0] != 0){
-    if(encrypt){
-      char password[64] = {0};
-      if(!credentials_encrypt(out->password, password)){
-        return 1;
-      }
-      fprintf(stream, "password=%s\n", password);
-    }else{
-      fprintf(stream, "password=%s\n", out->password);
+  fprintf(stream, "protocol=%s\n", out->protocol);
+  fprintf(stream, "host=%s\n", out->host);
+  fprintf(stream, "path=%s\n", out->path);
+  fprintf(stream, "username=%s\n", out->username);
+  if(encrypt){
+    char password[64] = {0};
+    if(!credentials_encrypt(out->password, password)){
+      return 1;
     }
+    fprintf(stream, "password=%s\n", password);
+  }else{
+    fprintf(stream, "password=%s\n", out->password);
   }
   fprintf(stream, "\n");
   return 1;
@@ -465,8 +463,7 @@ int main(int argc, char **argv){
       strcpy(out->password, match.password);
       strcpy(out->host, match.host);
       strcpy(out->path, match.path);
-      if(!credentials_show_dialog(out))
-        return 0;
+      credentials_show_dialog(out);
       credentials_set(out);
     }
     credentials_write(stdout, out, 0);
