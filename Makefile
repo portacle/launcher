@@ -17,12 +17,12 @@ win: $(OUTPUT)/win
 $(OUTPUT)/win: portacle_win.c portacle.c portacle.rc portacle.ico Makefile
 	windres -o "$(OUTPUT)/portacle.res" "portacle.rc" -O coff
 	$(CC) -o "$(OUTPUT)/portacle.exe" $(CFLAGS) "portacle.c" "$(OUTPUT)/portacle.res" -lshlwapi -mwindows -mconsole
-	$(CC) -o "$(OUTPUT)/credentials.exe" $(CFLAGS) "credentials/portacle_credentials.c" -lglfw3 -lopengl32 -lm -lGLU32  -lgcrypt
+	$(CC) -o "$(OUTPUT)/credentials.exe" $(CFLAGS) "credentials/portacle_credentials.c" -lshlwapi -mwindows -lglfw -lopengl32 -lm -lGLU32 -lgcrypt
 	touch "$(OUTPUT)/win"
 
 mac: $(OUTPUT)/mac
 $(OUTPUT)/mac: portacle_mac.c portacle.c Makefile
 	$(CC) -o "$(OUTPUT)/portacle" $(CFLAGS) "portacle.c"
-	$(CC) -o "$(OUTPUT)/credentials" $(CFLAGS) "credentials/portacle_credentials.c" -lglfw3 -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo -lm -lGLEW -lgcrypt -L/usr/local/lib 
+	$(CC) -o "$(OUTPUT)/credentials" $(CFLAGS) "credentials/portacle_credentials.c" -lglfw -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo -lm -lgcrypt -L/usr/local/lib 
 	touch "$(OUTPUT)/mac"
 
