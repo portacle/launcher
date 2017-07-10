@@ -149,9 +149,12 @@ int credentials_encrypt(char *in_buffer, char *out_buffer){
   size_t key_length = gcry_cipher_get_algo_keylen(CRYPT_CIPHER);
   size_t blk_length = gcry_cipher_get_algo_blklen(CRYPT_CIPHER);
   size_t length = strlen(in_buffer)+1;
-  if(length % blk_length != 0) length += blk_length - length % blk_length;
   gcry_error_t error = {0};
   gcry_cipher_hd_t handle = {0};
+  char key[512] = {0};
+  
+  if(length % blk_length != 0) length += blk_length - length % blk_length;
+  if(!get_env("PORTACLE_CREDENTIALS_KEY", key)) key = CRYPT_KEY;
 
   error = gcry_cipher_open(&handle, CRYPT_CIPHER, CRYPT_MODE, 0);
   if(error) goto gcrypt_failure;
@@ -176,6 +179,9 @@ int credentials_decrypt(char *in_buffer, char *out_buffer){
   size_t length = strlen(in_buffer);
   gcry_error_t error;
   gcry_cipher_hd_t handle;
+  char key[512] = {0};
+  
+  if(!get_env("PORTACLE_CREDENTIALS_KEY", key)) key = CRYPT_KEY;
 
   error = gcry_cipher_open(&handle, CRYPT_CIPHER, CRYPT_MODE, 0);
   if(error) goto gcrypt_failure;
