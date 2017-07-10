@@ -210,9 +210,10 @@ int credentials_read(FILE *stream, struct credentials *out, int decrypt){
     
     char *key = strtok(line, "=");
     char *val = strtok(0, "=");
-    if(!key || !val){
+    if(!key){
       return 0;
     }
+    if(!val) val = "";
     
     /* */ if(streq(key, "protocol")){
       strncpy(out->protocol, val, 64);
