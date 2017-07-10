@@ -17,7 +17,7 @@ win: $(OUTPUT)/win
 $(OUTPUT)/win: portacle_win.c portacle.c portacle.rc portacle.ico Makefile
 	windres -o "$(OUTPUT)/portacle.res" "portacle.rc" -O coff
 	$(CC) -o "$(OUTPUT)/portacle.exe" $(CFLAGS) "portacle.c" "$(OUTPUT)/portacle.res" -lshlwapi -mwindows -mconsole
-	$(CC) -o "$(OUTPUT)/credentials.exe" $(CFLAGS) "credentials/portacle_credentials.c" -lshlwapi -mwindows -lglfw -lopengl32 -lm -lGLU32 -lgcrypt
+	$(CC) -o "$(OUTPUT)/credentials.exe" $(CFLAGS) -D_GNU_SOURCE "credentials/portacle_credentials.c" -lshlwapi -mwindows -lglfw3 -lopengl32 -lm -lGLU32 -lgcrypt
 	touch "$(OUTPUT)/win"
 
 mac: $(OUTPUT)/mac
