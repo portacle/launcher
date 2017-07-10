@@ -202,8 +202,7 @@ int credentials_decrypt(char *in_buffer, char *out_buffer){
 }
 
 int credentials_read(FILE *stream, struct credentials *out, int decrypt){
-  char *line = 0;
-  size_t size = 0;
+  char line[1024] = {0};
 
   out->protocol[0] = 0;
   out->host[0] = 0;
@@ -213,12 +212,13 @@ int credentials_read(FILE *stream, struct credentials *out, int decrypt){
   
   // According to https://www.kernel.org/pub/software/scm/git/docs/git-credential.html
   // both EOF and empty line designate an end.
-  while(1 < getline(&line, &size, stream)){
+  while(fgets(line, 1024, stream)){
     line[strlen(line)-1] = 0;
+    if(!line[0]) break;
+    
     char *key = strtok(line, "=");
     char *val = strtok(0, "=");
     if(!key || !val){
-      free(line);
       return 0;
     }
     
@@ -234,7 +234,6 @@ int credentials_read(FILE *stream, struct credentials *out, int decrypt){
       if(decrypt){
         char password[64] = {0};
         if(!credentials_decrypt(val, password)){
-          free(line);
           return 0;
         }
         strncpy(out->password, password, 64);
@@ -246,7 +245,6 @@ int credentials_read(FILE *stream, struct credentials *out, int decrypt){
     }
   }
 
-  if(line) free(line);
   return 1;
 }
 
