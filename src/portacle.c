@@ -49,10 +49,11 @@ int launch_emacs(char *root, int argc, char **argv){
   dir = opendir(path);
   if(dir){
     while((entry = readdir(dir)) != 0){
-      if(!is_directory_entry(path, entry->d_name)){
+      char *dot = strrchr(entry->d_name, '.');
+      if(dot && streq(dot, ".ttf")){
         char font[PATHLEN]={0};
         if(!add_font(pathcat(font, path, 1, entry->d_name))){
-          fprintf(stderr, "Warning: Failed to register font %s", font);
+          fprintf(stderr, "Warning: Failed to register font %s\n", font);
         }
       }
     }
