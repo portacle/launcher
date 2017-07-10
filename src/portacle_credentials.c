@@ -69,9 +69,13 @@ int credentials_show_dialog(struct credentials *creds){
     struct nk_font_atlas *atlas;
     nk_glfw3_font_stash_begin(&atlas);
     if(root[0]){
+      struct nk_font_config config = nk_font_config(18);
+      config.oversample_v = 7;
+      config.oversample_h = 7;
+      
       char path[PATHLEN];
       pathcat(path, root, 3, "all", "fonts", "NotoSansUI-Regular.ttf");
-      struct nk_font *font = nk_font_atlas_add_from_file(atlas, path, 18, 0);
+      struct nk_font *font = nk_font_atlas_add_from_file(atlas, path, 18, &config);
       nk_glfw3_font_stash_end();
       nk_style_set_font(ctx, &font->handle);
     }else{
