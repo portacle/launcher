@@ -7,7 +7,7 @@
 #define NK_INCLUDE_DEFAULT_FONT
 #define NK_IMPLEMENTATION
 #define NK_GLFW_GL2_IMPLEMENTATION
-#include "../toolkit.c"
+#include "toolkit.c"
 #include <GLFW/glfw3.h>
 #include <gcrypt.h>
 #include "nuklear.h"
