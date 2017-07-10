@@ -71,7 +71,7 @@ int credentials_show_dialog(struct credentials *creds){
     if(root[0]){
       char path[PATHLEN];
       pathcat(path, root, 3, "all", "fonts", "NotoSansUI-Regular.ttf");
-      struct nk_font *font = nk_font_atlas_add_from_file(atlas, path, 14, 0);
+      struct nk_font *font = nk_font_atlas_add_from_file(atlas, path, 18, 0);
       nk_glfw3_font_stash_end();
       nk_style_set_font(ctx, &font->handle);
     }else{
