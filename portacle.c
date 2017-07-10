@@ -65,6 +65,11 @@ int launch_git(char *root, int argc, char **argv){
   if(!set_env("LD_PRELOAD", pathcat(path, root, 3, PLATFORM, "launcher", "ld-wrap.so"))) return 0;
 #endif
   if(!add_env("PATH", pathcat(path, root, 5, PLATFORM, "git", "libexec", "git-core", ""))) return 0;
+#ifdef WIN
+  if(!set_env("GIT_ASKPASS", pathcat(path, root, 3, PLATFORM, "launcher", "credentials.exe"))) return 0;
+#else
+  if(!set_env("GIT_ASKPASS", pathcat(path, root, 3, PLATFORM, "launcher", "credentials"))) return 0;
+#endif
   
   pathcat(path, root, 4, PLATFORM, "git", "bin", "git");
   return launch_maybe_ld(path, argc, argv);
