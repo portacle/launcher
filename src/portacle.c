@@ -18,22 +18,25 @@ int emacs_version(char *root, char *version){
 
 int launch_emacs(char *root, int argc, char **argv){
   char path[PATHLEN]={0}, start[PATHLEN]={0}, share[PATHLEN]={0}, version[PATHLEN]={0};
+  DIR *dir; struct dirent *entry;
+  
   if(!emacs_version(root, version)) return 0;
   pathcat(share, root, 5, PLATFORM, "emacs", "share", "emacs", version);
   if(!set_env("EMACSLOADPATH", "")) return 0;
   if(!add_env("EMACSLOADPATH", pathcat(path, root, 2, "config", ""))) return 0;
   if(!add_env("EMACSLOADPATH", pathcat(path, share, 2, "site-lisp", ""))) return 0;
   if(!add_env("EMACSLOADPATH", pathcat(path, share, 2, "lisp", ""))) return 0;
-  DIR *dir = opendir(path);
-  if(!dir) return 0;
-  struct dirent *entry;
-  while((entry = readdir(dir)) != 0){
-    if(is_directory_entry(path, entry->d_name)){
-      char load[PATHLEN]={0};
-      if(!add_env("EMACSLOADPATH", pathcat(load, share, 3, "lisp", entry->d_name, ""))) return 0;
+  
+  dir = opendir(path);
+  if(dir){
+    while((entry = readdir(dir)) != 0){
+      if(is_directory_entry(path, entry->d_name)){
+        char load[PATHLEN]={0};
+        if(!add_env("EMACSLOADPATH", pathcat(load, share, 3, "lisp", entry->d_name, ""))) return 0;
+      }
     }
+    closedir(dir);
   }
-  closedir(dir);
   
   if(!add_env("PATH", pathcat(path, root, 6, PLATFORM, "emacs", "libexec", "emacs", version, ""))) return 0;
   if(!set_env("EMACSDATA", pathcat(path, share, 2, "etc", ""))) return 0;
@@ -41,6 +44,20 @@ int launch_emacs(char *root, int argc, char **argv){
   if(!set_env("GTK_MODULES", "")) return 0;
   if(!set_env("GTK2_MODULES", "")) return 0;
   if(!set_env("GTK3_MODULES", "")) return 0;
+
+  pathcat(path, root, 2, "all", "fonts");
+  dir = opendir(path);
+  if(dir){
+    while((entry = readdir(dir)) != 0){
+      if(!is_directory_entry(path, entry->d_name)){
+        char font[PATHLEN]={0};
+        if(!add_font(pathcat(font, path, 1, entry->d_name))){
+          fprintf(stderr, "Warning: Failed to register font %s", font);
+        }
+      }
+    }
+    closedir(dir);
+  }
 
   pathcat(start, root, 2, "config", "emacs-init.el");
   char *rargv[argc+7];
