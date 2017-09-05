@@ -44,6 +44,20 @@ int launch_emacs(char *root, int argc, char **argv){
   if(!set_env("GTK_MODULES", "")) return 0;
   if(!set_env("GTK2_MODULES", "")) return 0;
   if(!set_env("GTK3_MODULES", "")) return 0;
+  
+#ifdef LIN
+  pathcat(path, root, 2, PLATFORM, "lib", "");
+  dir = opendir(path);
+  if(dir){
+    while((entry = readdir(dir)) != 0){
+      if(strstr(entry->d_name, "gdk_pixbuf")){
+        if(!set_env("GDK_PIXBUF_MODULE_FILE", pathcat(path, root, 3, PLATFORM, "lib", entry->d_name))) return 0;
+        break;
+      }
+    }
+    closedir(dir);
+  }
+#endif
 
   pathcat(path, root, 2, "all", "fonts");
   dir = opendir(path);
