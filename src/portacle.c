@@ -97,6 +97,7 @@ int launch_git(char *root, int argc, char **argv){
   if(!set_env("LD_PRELOAD", pathcat(path, root, 3, PLATFORM, "launcher", "ld-wrap.so"))) return 0;
 #endif
   if(!add_env("PATH", pathcat(path, root, 5, PLATFORM, "git", "libexec", "git-core", ""))) return 0;
+  if(!add_env("GIT_SSL_CAPATH", pathcat(path, root, 3, "all", "ssl", "ca-bundle.crt"))) return 0;
   
   pathcat(path, root, 4, PLATFORM, "git", "bin", "git");
   return launch_maybe_ld(path, argc, argv);
