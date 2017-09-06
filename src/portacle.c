@@ -98,9 +98,9 @@ int launch_git(char *root, int argc, char **argv){
 #endif
   if(!add_env("PATH", pathcat(path, root, 5, PLATFORM, "git", "libexec", "git-core", ""))) return 0;
 #ifdef WIN
-  if(!add_env("GIT_SSL_CAPATH", "/share/ssl/ca-bundle.crt")) return 0;
+  if(!add_env("GIT_SSL_CAINFO", "/share/ssl/ca-bundle.crt")) return 0;
 #else 
-  if(!add_env("GIT_SSL_CAPATH", pathcat(path, root, 3, "all", "ssl", "ca-bundle.crt"))) return 0;
+  if(!add_env("GIT_SSL_CAINFO", pathcat(path, root, 3, "all", "ssl", "ca-bundle.crt"))) return 0;
 #endif
   
   pathcat(path, root, 4, PLATFORM, "git", "bin", "git");
