@@ -16,6 +16,12 @@ int emacs_version(char *root, char *version){
   return 1;
 }
 
+int launch_emacsclient(char *root, int argc, char **argv){
+  char path[PATHLEN]={0};  
+  pathcat(path, root, 4, PLATFORM, "emacs", "bin", "emacsclient");
+  return launch(path, argc, argv);
+}
+
 int launch_emacs(char *root, int argc, char **argv){
   char path[PATHLEN]={0}, start[PATHLEN]={0}, share[PATHLEN]={0}, version[PATHLEN]={0};
   DIR *dir; struct dirent *entry;
@@ -237,6 +243,7 @@ int main(int argc, char **argv){
   int (*app_launcher)(char *root, int argc, char **argv) = launch_unknown;
   if(streq(app, "query")) app_launcher = launch_query;
   else if(streq(app, "emacs")) app_launcher = launch_emacs;
+  else if(streq(app, "emacsclient")) app_launcher = launch_emacsclient;
   else if(streq(app, "git")) app_launcher = launch_git;
   else if(streq(app, "sbcl")) app_launcher = launch_sbcl;
   else if(streq(app, "ash")) app_launcher = launch_ash;
