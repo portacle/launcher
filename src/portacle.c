@@ -195,7 +195,7 @@ int configure_env(char *root){
 
   char lang[PATHLEN]={0};
   if(!get_env("PORTACLE_LANG", lang) || streq(lang, "")){
-    set_env("LANG", "en_US");
+    set_env("LANG", "en_US.UTF-8");
   }else{
     set_env("LANG", lang);
   }
