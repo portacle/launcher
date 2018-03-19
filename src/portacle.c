@@ -56,7 +56,7 @@ int launch_fontreg(char *root, int argc, char **argv){
 }
 
 int launch_emacs(char *root, int argc, char **argv){
-  char path[PATHLEN]={0}, start[PATHLEN]={0}, share[PATHLEN]={0}, version[PATHLEN]={0};
+  char path[PATHLEN]={0}, share[PATHLEN]={0}, version[PATHLEN]={0};
   DIR *dir; struct dirent *entry;
   
   if(!emacs_version(root, version)) return 0;
@@ -100,12 +100,10 @@ int launch_emacs(char *root, int argc, char **argv){
 
   launch_fontreg(root, 0, 0);
 
-  pathcat(start, root, 2, "config", "emacs-init.el");
-  char *rargv[argc+7];
-  add_args(rargv, argc, argv, 7, "--no-init-file",
+  char *rargv[argc+5];
+  add_args(rargv, argc, argv, 5, "--no-init-file",
            "--name", "Portacle",
-           "--title", "Portacle",
-           "--load", start);
+           "--title", "Portacle");
 
   // Ensure the console disappears on Windows.
 #ifdef WIN
