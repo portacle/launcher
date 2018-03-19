@@ -21,23 +21,20 @@ endif
 all:
 	make $(TARGET)
 
-lin: $(OUTPUT)/lin
-$(OUTPUT)/lin: $(SOURCES)
+lin: $(SOURCES)
 	$(CC) -o "$(OUTPUT)/ld-wrap.so" $(CFLAGS) -fPIC -shared -Wl,-init,init "src/ld-wrap.c" -ldl
+	$(CC) -o "$(OUTPUT)/libnss_mymachines.so.2" $(CFLAGS) -D MODULE=mymachines -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_myhostname.so.2" $(CFLAGS) -D MODULE=myhostname -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_resolve.so.2" $(CFLAGS) -D MODULE=resolve -fPIC -shared "src/nss_stub.c" -lnss_dns
 	$(CC) -o "$(OUTPUT)/portacle" $(CFLAGS) -static "src/portacle.c"
 	$(CC) -o "$(OUTPUT)/credentials" $(CFLAGS) "src/portacle_credentials.c" -lglfw -lGL -lm -lGLU -lgcrypt
-	touch "$(OUTPUT)/lin"
 
-win: $(OUTPUT)/win
-$(OUTPUT)/win: $(SOURCES)
+win: $(SOURCES)
 	windres -o "$(OUTPUT)/portacle.res" "src/portacle.rc" -O coff
 	$(CC) -o "$(OUTPUT)/portacle.exe" $(CFLAGS) "src/portacle.c" "$(OUTPUT)/portacle.res" -lshlwapi -mwindows -mconsole
 	$(CC) -o "$(OUTPUT)/credentials.exe" $(CFLAGS) "src/portacle_credentials.c" -lshlwapi -mwindows -lglfw3 -lopengl32 -lm -lGLU32 -lgcrypt
-	touch "$(OUTPUT)/win"
 
-mac: $(OUTPUT)/mac
-$(OUTPUT)/mac: $(SOURCES)
+mac: $(SOURCES)
 	$(CC) -o "$(OUTPUT)/portacle" $(CFLAGS) "src/portacle.c"
-	$(CC) -o "$(OUTPUT)/credentials" $(CFLAGS) "src/portacle_credentials.c" -lglfw -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo -lm -lgcrypt -L/usr/local/lib 
-	touch "$(OUTPUT)/mac"
+	$(CC) -o "$(OUTPUT)/credentials" $(CFLAGS) "src/portacle_credentials.c" -lglfw -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo -lm -lgcrypt -L/usr/local/lib
 
