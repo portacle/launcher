@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -98,7 +99,6 @@ int launch_ld(char *path, int argc, char **argv){
   return launch(loader, argc+3, rargv);
 }
 
-
 int run(int argc, ...){
   char *argv[argc+1];
   
@@ -114,7 +114,9 @@ int run(int argc, ...){
   if(pid < 0){
     return 0;
   }else if(pid == 0){
-    return execv(argv[0], argv);
+    execvp(argv[0], argv);
+    fprintf(stderr, "Exec for %s failed: %s\n", argv[0], strerror(errno));
+    exit(0);
   }else{
     int status;
     waitpid(pid, &status, 0);
@@ -125,7 +127,7 @@ int run(int argc, ...){
 int add_font(char *file){
   char *name = basename(file);
   char *home = getenv("HOME");
-  char target[PATHLEN], fonts[PATHLEN];
+  char target[PATHLEN] = {0}, fonts[PATHLEN] = {0};
 
   strcpy(fonts, home);
   strcat(fonts, "/.fonts/");
@@ -133,9 +135,9 @@ int add_font(char *file){
   strcat(target, name);
   
   if(access(target, F_OK) == -1){
-    if(!run(3, "/usr/bin/mkdir", "-p", fonts))
+    if(!run(3, "mkdir", "-p", fonts))
       return 0;
-    if(!run(4, "/usr/bin/cp", "-p", file, target))
+    if(!run(4, "cp", "-p", file, target))
       return 0;
   }
   return 1;
@@ -147,7 +149,7 @@ int reg_fonts(){
 
   strcpy(fonts, home);
   strcat(fonts, "/.fonts/");
-  if(!run(2, "/usr/bin/fc-cache", fonts))
+  if(!run(2, "fc-cache", fonts))
     return 0;
   return 1;
 }
