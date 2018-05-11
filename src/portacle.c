@@ -189,6 +189,7 @@ int configure_env(char *root){
 #ifdef WIN
   if(!add_env("PATH", pathcat(path, root, 3, PLATFORM, "lib", ""))) return 0;
 #endif
+  if(!add_env("LOCPATH", pathcat(path, root, 3, "all", "locale", ""))) return 0;
   if(!set_env("LW_LIBRARY_PATH", pathcat(path, root, 3, PLATFORM, "lib", ""))) return 0;
   if(!set_env("LW_LOADER_PATH", pathcat(path, root, 3, PLATFORM, "lib", "ld-linux.so"))) return 0;
   //if(!set_env("LW_SHELL", pathcat(path, root, 3, PLATFORM, "bin", "ash"))) return 0;
