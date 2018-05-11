@@ -194,6 +194,8 @@ int configure_env(char *root){
   if(!set_env("ROOT", root)) return 0;
   if(!set_env("XDG_CONFIG_HOME", pathcat(path, root, 2, "config", ""))) return 0;
   if(!set_env("XDG_DATA_HOME", pathcat(path, root, 2, PLATFORM, ""))) return 0;
+  if(!set_env("FONTCONFIG_PATH", pathcat(path, root, 3, "config", "fontconfig", ""))) return 0;
+  if(!set_env("FONTCONFIG_FILE", pathcat(path, root, 3, "config", "fontconfig", "fonts.conf"))) return 0;
   if(!set_env("SBCL_HOME", pathcat(path, root, 5, PLATFORM, "sbcl", "lib", "sbcl", ""))) return 0;
   if(!add_env("PATH", pathcat(path, root, 3, PLATFORM, "bin", ""))) return 0;
 #ifdef WIN
