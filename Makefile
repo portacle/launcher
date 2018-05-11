@@ -1,5 +1,5 @@
 CC ?= gcc
-CFLAGS ?= -std=c99 -Wall -D_GNU_SOURCE
+CFLAGS ?= -std=c99 -Wall -D_GNU_SOURCE -g
 OUTPUT ?= build
 IGNORE := $(shell mkdir -p $(OUTPUT))
 SOURCES := $(wildcard src/*)
