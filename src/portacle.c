@@ -22,6 +22,39 @@ int launch_emacsclient(char *root, int argc, char **argv){
   return launch(path, argc, argv);
 }
 
+int launch_fontreg(char *root, int argc, char **argv){
+  int exit = 1;
+  if(1 < argc){
+    for(int i=1; i<argc; ++i){
+      if(!add_font(argv[i])){
+        fprintf(stderr, "Failed to add font %s\n", argv[i]);
+        exit = 0;
+      }
+    }
+  }else{
+    char path[PATHLEN]={0};
+    DIR *dir; struct dirent *entry;
+    pathcat(path, root, 2, "all", "fonts");
+    dir = opendir(path);
+    if(dir){
+      while((entry = readdir(dir)) != 0){
+        char *dot = strrchr(entry->d_name, '.');
+        if(dot && (streq(dot, ".ttf") || streq(dot, ".otf"))){
+          char font[PATHLEN]={0};
+          if(!add_font(pathcat(font, path, 1, entry->d_name))){
+            fprintf(stderr, "Failed to add font %s\n", font);
+            exit = 0;
+          }
+        }
+      }
+      closedir(dir);
+    }
+  }
+  if(!reg_fonts())
+    exit = 0;
+  return exit;
+}
+
 int launch_emacs(char *root, int argc, char **argv){
   char path[PATHLEN]={0}, start[PATHLEN]={0}, share[PATHLEN]={0}, version[PATHLEN]={0};
   DIR *dir; struct dirent *entry;
@@ -65,20 +98,7 @@ int launch_emacs(char *root, int argc, char **argv){
   }
 #endif
 
-  pathcat(path, root, 2, "all", "fonts");
-  dir = opendir(path);
-  if(dir){
-    while((entry = readdir(dir)) != 0){
-      char *dot = strrchr(entry->d_name, '.');
-      if(dot && streq(dot, ".ttf")){
-        char font[PATHLEN]={0};
-        if(!add_font(pathcat(font, path, 1, entry->d_name))){
-          fprintf(stderr, "Warning: Failed to register font %s\n", font);
-        }
-      }
-    }
-    closedir(dir);
-  }
+  launch_fontreg(root, 0, 0);
 
   pathcat(start, root, 2, "config", "emacs-init.el");
   char *rargv[argc+7];
@@ -148,16 +168,6 @@ int launch_credentials(char *root, int argc, char **argv){
 
   pathcat(path, root, 4, PLATFORM, "launcher", "credentials");
   return launch_maybe_ld(path, argc, argv);
-}
-
-int launch_fontreg(char *root, int argc, char **argv){
-  for(int i=1; i<argc; ++i){
-    if(!add_font(argv[i])){
-      fprintf(stderr, "Failed to add font %s\n", argv[i]);
-      return 0;
-    }
-  }
-  return 1;
 }
 
 int launch_query(char *root, int argc, char **argv){

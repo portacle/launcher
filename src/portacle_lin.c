@@ -125,7 +125,7 @@ int run(int argc, ...){
 int add_font(char *file){
   char *name = basename(file);
   char *home = getenv("HOME");
-  char target[3000], fonts[3000];
+  char target[PATHLEN], fonts[PATHLEN];
 
   strcpy(fonts, home);
   strcat(fonts, "/.fonts/");
@@ -137,8 +137,17 @@ int add_font(char *file){
       return 0;
     if(!run(4, "/usr/bin/cp", "-p", file, target))
       return 0;
-    if(!run(2, "/usr/bin/fc-cache", fonts))
-      return 0;
   }
+  return 1;
+}
+
+int reg_fonts(){
+  char *home = getenv("HOME");
+  char fonts[PATHLEN];
+
+  strcpy(fonts, home);
+  strcat(fonts, "/.fonts/");
+  if(!run(2, "/usr/bin/fc-cache", fonts))
+    return 0;
   return 1;
 }

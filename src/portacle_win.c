@@ -116,6 +116,10 @@ int add_font(char *file){
   if(!resolve_path(file, font)) return 0;
   if(!AddFontResource(font)) return 0;
 
+  return 1;
+}
+
+int reg_fonts(){
   SendMessage(HWND_BROADCAST, WM_FONTCHANGE, 0, 0);
   return 1;
 }

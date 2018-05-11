@@ -119,3 +119,7 @@ int add_font(char *file){
   }
   return 1;
 }
+
+int reg_fonts(){
+  return 1;
+}
