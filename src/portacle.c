@@ -151,14 +151,13 @@ int launch_credentials(char *root, int argc, char **argv){
 }
 
 int launch_fontreg(char *root, int argc, char **argv){
-  int exit = 0;
   for(int i=1; i<argc; ++i){
     if(!add_font(argv[i])){
-      ++exit;
       fprintf(stderr, "Failed to add font %s\n", argv[i]);
+      return 0;
     }
   }
-  return exit;
+  return 1;
 }
 
 int launch_query(char *root, int argc, char **argv){
@@ -245,6 +244,10 @@ int main(int argc, char **argv){
     fprintf(stderr, "Root:          %s\n", root);
     fprintf(stderr, "Binary Path:   %s\n", path);
     fprintf(stderr, "Library Path:  %s\n", lib);
+    fprintf(stderr, "Interpreted Args:\n");
+    for(int i=0; i<argc; ++i){
+      fprintf(stderr, "    %s\n", argv[i]);
+    }
   }
 
   int (*app_launcher)(char *root, int argc, char **argv) = launch_unknown;
