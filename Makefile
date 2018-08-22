@@ -23,9 +23,26 @@ all:
 
 lin: $(SOURCES)
 	$(CC) -o "$(OUTPUT)/ld-wrap.so" $(CFLAGS) -fPIC -shared -Wl,-init,init "src/ld-wrap.c" -ldl
-	$(CC) -o "$(OUTPUT)/libnss_mymachines.so.2" $(CFLAGS) -D MODULE=mymachines -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_cache.so.2" $(CFLAGS) -D MODULE=cache -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_db.so.2" $(CFLAGS) -D MODULE=db -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_docker.so.2" $(CFLAGS) -D MODULE=docker -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_extrausers.so.2" $(CFLAGS) -D MODULE=extrausers -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_gw_name.so.2" $(CFLAGS) -D MODULE=gw_name -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_ldap.so.2" $(CFLAGS) -D MODULE=ldap -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_ldapd.so.2" $(CFLAGS) -D MODULE=ldapd -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_libvirt.so.2" $(CFLAGS) -D MODULE=libvirt -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_lwres.so.2" $(CFLAGS) -D MODULE=lwres -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_mdns.so.2" $(CFLAGS) -D MODULE=mdns -fPIC -shared "src/nss_stub.c" -lnss_dns
 	$(CC) -o "$(OUTPUT)/libnss_myhostname.so.2" $(CFLAGS) -D MODULE=myhostname -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_mymachines.so.2" $(CFLAGS) -D MODULE=mymachines -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_mysql.so.2" $(CFLAGS) -D MODULE=mysql -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_pgsql2.so.2" $(CFLAGS) -D MODULE=pgsql2 -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_rainbow2.so.2" $(CFLAGS) -D MODULE=rainbow2 -fPIC -shared "src/nss_stub.c" -lnss_dns
 	$(CC) -o "$(OUTPUT)/libnss_resolve.so.2" $(CFLAGS) -D MODULE=resolve -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_securepass.so.2" $(CFLAGS) -D MODULE=securepass -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_sss.so.2" $(CFLAGS) -D MODULE=sss -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_systemd.so.2" $(CFLAGS) -D MODULE=systemd -fPIC -shared "src/nss_stub.c" -lnss_dns
+	$(CC) -o "$(OUTPUT)/libnss_winbind.so.2" $(CFLAGS) -D MODULE=winbind -fPIC -shared "src/nss_stub.c" -lnss_dns
 	$(CC) -o "$(OUTPUT)/portacle" $(CFLAGS) -static "src/portacle.c"
 	$(CC) -o "$(OUTPUT)/credentials" $(CFLAGS) "src/portacle_credentials.c" -lglfw -lGL -lm -lGLU -lgcrypt
 
