@@ -1,3 +1,4 @@
+#include <winsock2.h>
 #include <windows.h>
 #include <shellapi.h>
 #include <shlwapi.h>
@@ -64,6 +65,7 @@ int qcat(char *target, int offset, char *arg){
 
 int win_create_flags = 0;
 int launch(char *path, int argc, char **argv){
+  DWORD code = 0;
   PROCESS_INFORMATION process_info = {0};
   STARTUPINFO startup_info = {0};
 
@@ -97,7 +99,8 @@ int launch(char *path, int argc, char **argv){
     return 0;
   // Wait for process to exit.
   WaitForSingleObject(process_info.hProcess, INFINITE);
-  GetExitCodeProcess(process_info.hProcess, &exitCode);
+  GetExitCodeProcess(process_info.hProcess, &code);
+  exitCode = code;
   CloseHandle(process_info.hProcess);
   CloseHandle(process_info.hThread);
   return 1;
