@@ -120,6 +120,6 @@ int add_font(char *file){
 }
 
 int reg_fonts(){
-  SendMessage(HWND_BROADCAST, WM_FONTCHANGE, 0, 0);
+  SendNotifyMessage(HWND_BROADCAST, WM_FONTCHANGE, 0, 0);
   return 1;
 }
