@@ -209,7 +209,7 @@ int configure_env(char *root){
   char lang[PATHLEN]={0};
   if(!get_env("PORTACLE_LANG", lang) || streq(lang, "")){
     set_env("LANG", "en_US.UTF-8");
-    sen_env("LC_ALL", "en_US.UTF-8");
+    set_env("LC_ALL", "en_US.UTF-8");
   }else{
     set_env("LANG", lang);
     set_env("LC_ALL", lang);
