@@ -130,7 +130,7 @@ int add_font(char *file){
   char target[PATHLEN] = {0}, fonts[PATHLEN] = {0};
 
   strcpy(fonts, home);
-  strcat(fonts, "/.fonts/");
+  strcat(fonts, "/.local/share/fonts/");
   strcpy(target, fonts);
   strcat(target, name);
   
@@ -148,7 +148,7 @@ int reg_fonts(){
   char fonts[PATHLEN];
 
   strcpy(fonts, home);
-  strcat(fonts, "/.fonts/");
+  strcat(fonts, "/.local/share/fonts/");
   if(!run(2, "fc-cache", fonts))
     return 0;
   return 1;
