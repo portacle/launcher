@@ -149,7 +149,7 @@ int reg_fonts(){
 
   strcpy(fonts, home);
   strcat(fonts, "/.local/share/fonts/");
-  if(!run(2, "fc-cache", fonts))
+  if(!run(3, "fc-cache", "-f", fonts))
     return 0;
   return 1;
 }
