@@ -132,10 +132,47 @@ int launch_git(char *root, int argc, char **argv){
 int launch_sbcl(char *root, int argc, char **argv){
   char path[PATHLEN]={0}, start[PATHLEN]={0};
 
-  pathcat(start, root, 2, "config", "sbcl-init.lisp");  
+  pathcat(start, root, 2, "config", "sbcl-init.lisp");
   char *rargv[argc+3];
-  add_args(rargv, argc, argv, 3, "--no-sysinit",
-           "--userinit", start);
+  
+  rargv[0] = argv[0];
+  // Copy all runtime options
+  int i = 1;
+  for(; i<argc; ++i){
+    // If not a runtime option, abort.
+    if(!any_streq(argv[i], 11,
+                  "--core",
+                  "--dynamic-space-size",
+                  "--control-stack-size",
+                  "--noinform",
+                  "--disable-ldb",
+                  "--lose-on-corruption",
+                  "--script"
+                  "--merge-core-pages",
+                  "--no-merge-core-pages",
+                  "--help",
+                  "--version")){
+      break;
+    }
+    rargv[i] = argv[i];
+    // If we have a value arg, copy the value too.
+    if(any_streq(argv[i], 4,
+                 "--core",
+                 "--dynamic-space-size",
+                 "--control-stack-size",
+                 "--script")){
+      ++i;
+      rargv[i] = argv[i];
+    }
+  }
+  
+  rargv[i+0] = "--no-sysinit";
+  rargv[i+1] = "--userinit";
+  rargv[i+2] = start;
+  
+  for(; i<argc; ++i){
+    rargv[i+3] = argv[i];
+  }
   
   pathcat(path, root, 4, PLATFORM, "sbcl", "bin", "sbcl");
   return launch(path, argc+3, rargv);

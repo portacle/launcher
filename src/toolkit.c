@@ -20,6 +20,21 @@ int streq(char *a, char *b){
   return (strcmp(a, b) == 0);
 }
 
+int any_streq(char *a, int c, ...){
+  int found = 0;
+  va_list argp;
+  va_start(argp, c);
+  for(int i=0; i<c; ++i){
+    char *b = va_arg(argp, char *);
+    if(streq(a, b)){
+      found = 1;
+      break;
+    }
+  }
+  va_end(argp);
+  return found;
+}
+
 char *pathcat(char *path, char *root, int c, ...){
   strcpy(path, root);
   
@@ -45,7 +60,7 @@ int add_env(char *name, char *value){
   return 1;
 }
 
-int add_args(char **rargv, int argc, char **argv, int c, ...){  
+int add_args(char **rargv, int argc, char **argv, int c, ...){
   va_list argp;
   va_start(argp, c);
   rargv[0] = argv[0];
