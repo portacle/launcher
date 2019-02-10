@@ -114,7 +114,7 @@ int launch_emacs(char *root, int argc, char **argv){
 #endif
 
   pathcat(path, root, 4, PLATFORM, "emacs", "bin", "emacs");
-  return launch_maybe_ld(path, argc+7, rargv);
+  return launch_maybe_ld(path, argc+6, rargv);
 }
 
 int launch_git(char *root, int argc, char **argv){
