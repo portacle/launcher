@@ -101,7 +101,9 @@ int launch_emacs(char *root, int argc, char **argv){
   launch_fontreg(root, 0, 0);
 
   char *rargv[argc+5];
-  add_args(rargv, argc, argv, 5, "--no-init-file",
+  add_args(rargv, argc, argv, 6,
+           "--no-init-file",
+           "--no-splash",
            "--name", "Portacle",
            "--title", "Portacle");
 
