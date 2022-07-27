@@ -193,6 +193,13 @@ int launch_hunspell(char *root, int argc, char **argv){
   return launch_maybe_ld(path, argc, argv);
 }
 
+int launch_gpg(char *root, int argc, char **argv){
+  char path[PATHLEN]={0};
+  if(!set_env("GNUPGHOME", pathcat(path, root, 3, "config", "gpg", ""))) return 0;
+  pathcat(path, root, 4, PLATFORM, "gpg", "bin", "gpg");
+  return launch_maybe_ld(path, argc, argv);
+}
+
 int launch_ag(char *root, int argc, char **argv){
   char path[PATHLEN]={0};
   pathcat(path, root, 4, PLATFORM, "ag", "bin", "ag");
@@ -311,6 +318,7 @@ int main(int argc, char **argv){
   else if(streq(app, "ash")) app_launcher = launch_ash;
   else if(streq(app, "hunspell")) app_launcher = launch_hunspell;
   else if(streq(app, "ag")) app_launcher = launch_ag;
+  else if(streq(app, "gpg")) app_launcher = launch_gpg;
   else if(streq(app, "fontreg")) app_launcher = launch_fontreg;
   else if(streq(app, "credentials")) app_launcher = launch_credentials;
 
